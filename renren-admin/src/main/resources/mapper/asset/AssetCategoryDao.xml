@@ -5,15 +5,23 @@
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="io.renren.modules.asset.entity.AssetCategoryEntity" id="assetCategoryMap">
-        <result property="id" column="id"/>
+        <result property="categoryId" column="category_id"/>
         <result property="parentId" column="parent_id"/>
         <result property="name" column="name"/>
         <result property="sortNum" column="sort_num"/>
-        <result property="categoryCode" column="category_code"/>
-        <result property="updateName" column="update_name"/>
-        <result property="createTime" column="create_time"/>
-        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
     </resultMap>
 
+    <select id="queryList" resultType="io.renren.modules.asset.entity.AssetCategoryEntity">
+        select t1.*,(select t2.name from asset_category t2 where t2.category_id=t1.parent_id)parentName from asset_category t1 where
+        t1.del_flag = 0
+        <if test="sql_filter != null">
+            and ${sql_filter}
+        </if>
+    </select>
+
+    <select id="queryCategoryIdList" resultType="Integer">
+		select category_id from asset_category where parent_id = #{value} and del_flag = 0
+	</select>
 
 </mapper>

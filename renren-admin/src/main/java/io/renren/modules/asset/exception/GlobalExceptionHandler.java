@@ -1,7 +1,7 @@
-package com.lxs.mall.exception;
+package io.renren.modules.asset.exception;
 
-import com.lxs.mall.enums.ResponseEnum;
-import com.lxs.mall.vo.ResponseVo;
+import io.renren.modules.asset.enums.ResponseEnum;
+import io.renren.modules.asset.vo.ResponseVo;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,10 +22,6 @@ public class GlobalExceptionHandler {
         return ResponseVo.error(ResponseEnum.ERROR, e.getMsg());
     }
 
-    @ExceptionHandler(UserLoginException.class)
-    public ResponseVo UserLoginException() {
-        return ResponseVo.error(ResponseEnum.NEED_LOGIN);
-    }
 
     /**
      * 异常处理 @valid
@@ -34,10 +30,10 @@ public class GlobalExceptionHandler {
      * @param e
      * @return
      */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+ /*   @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseVo notValidExceptionHandle(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
         return ResponseVo.error(ResponseEnum.PARAM_ERROR, bindingResult);
-    }
+    }*/
 
 }

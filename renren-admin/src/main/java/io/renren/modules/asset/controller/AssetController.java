@@ -4,8 +4,14 @@ import java.util.Arrays;
 import java.util.Map;
 
 import io.renren.common.validator.ValidatorUtils;
+import io.renren.modules.asset.enums.ResponseEnum;
+import io.renren.modules.asset.form.AssetForm;
+import io.renren.modules.asset.vo.ResponseVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,10 +23,10 @@ import io.renren.modules.asset.service.AssetService;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 
-
+import javax.validation.Valid;
 
 /**
- * 
+ *
  *
  * @author lxs
  * @email sunlightcs@gmail.com
@@ -28,6 +34,7 @@ import io.renren.common.utils.R;
  */
 @RestController
 @RequestMapping("asset/asset")
+@Slf4j
 public class AssetController {
     @Autowired
     private AssetService assetService;
@@ -60,10 +67,21 @@ public class AssetController {
      */
     @RequestMapping("/save")
     @RequiresPermissions("asset:asset:save")
-    public R save(@RequestBody AssetEntity asset){
-        assetService.save(asset);
+    public ResponseVo save(@Valid @RequestBody AssetForm form,
+                           BindingResult bindingResult){
 
-        return R.ok();
+        if (bindingResult.hasErrors()) {
+            log.info("注册提交的表单有误, {} {}",
+                    bindingResult.getFieldError().getField(),
+                    bindingResult.getFieldError().getDefaultMessage());
+            return ResponseVo.error(ResponseEnum.PARAM_ERROR, bindingResult);
+        }
+
+        AssetEntity assetEntity = new AssetEntity();
+        BeanUtils.copyProperties(form, assetEntity);
+        assetService.save(assetEntity);
+
+        return ResponseVo.success();
     }
 
     /**
@@ -74,7 +92,7 @@ public class AssetController {
     public R update(@RequestBody AssetEntity asset){
         ValidatorUtils.validateEntity(asset);
         assetService.updateById(asset);
-        
+
         return R.ok();
     }
 

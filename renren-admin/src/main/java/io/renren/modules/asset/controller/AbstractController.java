@@ -6,7 +6,7 @@
  * 版权所有，侵权必究！
  */
 
-package io.renren.modules.sys.controller;
+package io.renren.modules.asset.controller;
 
 import io.renren.modules.sys.entity.SysUserEntity;
 import org.apache.shiro.SecurityUtils;
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractController {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
-	
+
 	protected SysUserEntity getUser() {
 		return (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
 	}

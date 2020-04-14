@@ -3,6 +3,13 @@
 <head>
     <title></title>
 		<#include "/header.html">
+    <link rel="stylesheet" href="${request.contextPath}/statics/css/bootstrap-table.min.css">
+    <link rel="stylesheet" href="${request.contextPath}/statics/plugins/treegrid/jquery.treegrid.css">
+    <script src="${request.contextPath}/statics/libs/bootstrap-table.min.js"></script>
+    <script src="${request.contextPath}/statics/plugins/treegrid/jquery.treegrid.min.js"></script>
+    <script src="${request.contextPath}/statics/plugins/treegrid/jquery.treegrid.bootstrap3.js"></script>
+    <script src="${request.contextPath}/statics/plugins/treegrid/jquery.treegrid.extension.js"></script>
+    <script src="${request.contextPath}/statics/plugins/treegrid/tree.table.js"></script>
 </head>
 <body>
 <div id="rrapp" v-cloak>
@@ -18,62 +25,50 @@
             <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
 			</#if>
         </div>
-        <table id="jqGrid"></table>
-        <div id="jqGridPager"></div>
+<table id="categoryTable" data-mobile-responsive="true" data-click-to-select="true">
+    <thead>
+    <tr>
+        <th data-field="selectItem" data-checkbox="true"></th>
+    </tr>
+    </thead>
+</table>
     </div>
 
     <div v-show="!showList" class="panel panel-default">
         <div class="panel-heading">{{title}}</div>
         <form class="form-horizontal">
-														                    <div class="form-group">
-                        <div class="col-sm-2 control-label">父类id</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="assetCategory.parentId" placeholder="父类id"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
+			 <div class="form-group">
                         <div class="col-sm-2 control-label">分类名称</div>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" v-model="assetCategory.name" placeholder="分类名称"/>
                         </div>
                     </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">1~100 自然数， 值越小，越靠前</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="assetCategory.sortNum" placeholder="1~100 自然数， 值越小，越靠前"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">分类编码</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="assetCategory.categoryCode" placeholder="分类编码"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">更新人</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="assetCategory.updateName" placeholder="更新人"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">创建时间</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="assetCategory.createTime" placeholder="创建时间"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">更新时间</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="assetCategory.updateTime" placeholder="更新时间"/>
-                        </div>
-                    </div>
-							            <div class="form-group">
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">上级分类</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" style="cursor:pointer;" v-model="assetCategory.parentName" @click="categoryTree" readonly="readonly" placeholder="一级分类"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">排序号</div>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" v-model="assetCategory.sortNum" placeholder="排序号"/>
+                </div>
+            </div>
+            <div class="form-group">
                 <div class="col-sm-2 control-label"></div>
-                <input type="button" class="btn btn-primary" id="btnSaveOrUpdate" data-loading-text="保存中..." @click="saveOrUpdate" value="确定"/>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
                 &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
             </div>
         </form>
+
     </div>
+</div>
+
+<!-- 选择分类 -->
+<div id="categoryLayer" style="display: none;padding:10px;">
+    <ul id="categoryTree" class="ztree"></ul>
 </div>
 
 <script src="${request.contextPath}/statics/js/modules/asset/assetcategory.js?_${.now?long}"></script>

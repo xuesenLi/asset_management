@@ -1,4 +1,4 @@
-package com.lxs.mall.exception;
+package io.renren.modules.asset.exception;
 
 import lombok.Getter;
 import lombok.Setter;

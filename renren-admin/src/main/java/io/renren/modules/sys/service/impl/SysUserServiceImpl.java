@@ -16,6 +16,7 @@ import io.renren.common.annotation.DataFilter;
 import io.renren.common.utils.Constant;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
+import io.renren.modules.asset.vo.UserVo;
 import io.renren.modules.sys.dao.SysUserDao;
 import io.renren.modules.sys.entity.SysDeptEntity;
 import io.renren.modules.sys.entity.SysUserEntity;
@@ -80,7 +81,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 		user.setSalt(salt);
 		user.setPassword(ShiroUtils.sha256(user.getPassword(), user.getSalt()));
 		this.save(user);
-		
+
 		//保存用户与角色关系
 		sysUserRoleService.saveOrUpdate(user.getUserId(), user.getRoleIdList());
 	}
@@ -95,7 +96,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 			user.setPassword(ShiroUtils.sha256(user.getPassword(), userEntity.getSalt()));
 		}
 		this.updateById(user);
-		
+
 		//保存用户与角色关系
 		sysUserRoleService.saveOrUpdate(user.getUserId(), user.getRoleIdList());
 	}
@@ -107,6 +108,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         userEntity.setPassword(newPassword);
         return this.update(userEntity,
         	new QueryWrapper<SysUserEntity>().eq("user_id", userId).eq("password", password));
+    }
+
+    @Override
+    public List<UserVo> getByDeptId(long deptId) {
+		 return baseMapper.findByDeptId(deptId);
     }
 
 }

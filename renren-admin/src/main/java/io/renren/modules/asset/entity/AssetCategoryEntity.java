@@ -1,18 +1,21 @@
 package io.renren.modules.asset.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
- * 
- * 
+ *
+ *
  * @author lxs
  * @email sunlightcs@gmail.com
- * @date 2020-04-09 16:41:56
+ * @date 2020-04-09 17:16:23
  */
 @Data
 @TableName("asset_category")
@@ -23,7 +26,7 @@ public class AssetCategoryEntity implements Serializable {
 	 * 资产分类id
 	 */
 	@TableId
-	private Integer id;
+	private Integer categoryId;
 	/**
 	 * 父类id
 	 */
@@ -37,20 +40,23 @@ public class AssetCategoryEntity implements Serializable {
 	 */
 	private Integer sortNum;
 	/**
-	 * 分类编码
+	 * 是否删除  -1：已删除  0：正常
 	 */
-	private String categoryCode;
+	private Integer delFlag;
+
+
 	/**
-	 * 更新人
+	 * 上级部门名称
 	 */
-	private String updateName;
+	@TableField(exist=false)
+	private String parentName;
+
 	/**
-	 * 创建时间
+	 * ztree属性
 	 */
-	private Date createTime;
-	/**
-	 * 更新时间
-	 */
-	private Date updateTime;
+	@TableField(exist=false)
+	private Boolean open;
+	@TableField(exist=false)
+	private List<?> list;
 
 }

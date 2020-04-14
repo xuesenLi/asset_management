@@ -2,21 +2,21 @@ $(function () {
     $("#jqGrid").jqGrid({
         url: baseURL + 'asset/assetarea/list',
         datatype: "json",
-        colModel: [			
-			{ label: 'areaId', name: 'areaId', index: 'area_id', width: 50, key: true },
-			{ label: '区域名称', name: 'areaName', index: 'area_name', width: 80 }, 			
-			{ label: '1~100 自然数， 值越小，越靠前', name: 'sortNum', index: 'sort_num', width: 80 }, 			
-			{ label: '分类编码', name: 'areaCode', index: 'area_code', width: 80 }, 			
-			{ label: '更新人', name: 'updateName', index: 'update_name', width: 80 }, 			
-			{ label: '创建时间', name: 'createTime', index: 'create_time', width: 80 }, 			
-			{ label: '更新时间', name: 'updateTime', index: 'update_time', width: 80 }			
+        colModel: [
+			//{ label: 'areaId', name: 'areaId', index: 'area_id', width: 50, key: true },
+			{ label: '区域名称', name: 'areaName', index: 'area_name', width: 80 },
+			{ label: '排序', name: 'sortNum', index: 'sort_num', width: 80 },
+			{ label: '分类编码', name: 'areaCode', index: 'area_code', width: 80 },
+			{ label: '更新人', name: 'updateName', index: 'update_name', width: 80 },
+			{ label: '创建时间', name: 'createTime', index: 'create_time', width: 80 },
+			{ label: '更新时间', name: 'updateTime', index: 'update_time', width: 80 }
         ],
 		viewrecords: true,
         height: 385,
         rowNum: 10,
 		rowList : [10,30,50],
-        rownumbers: true, 
-        rownumWidth: 25, 
+        rownumbers: true,
+        rownumWidth: 25,
         autowidth:true,
         multiselect: true,
         pager: "#jqGridPager",
@@ -27,13 +27,13 @@ $(function () {
             records: "page.totalCount"
         },
         prmNames : {
-            page:"page", 
-            rows:"limit", 
+            page:"page",
+            rows:"limit",
             order: "order"
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
-        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
         }
     });
 });
@@ -61,7 +61,7 @@ var vm = new Vue({
 			}
 			vm.showList = false;
             vm.title = "修改";
-            
+
             vm.getInfo(areaId)
 		},
 		saveOrUpdate: function (event) {
@@ -124,7 +124,7 @@ var vm = new Vue({
 		reload: function (event) {
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
-			$("#jqGrid").jqGrid('setGridParam',{ 
+			$("#jqGrid").jqGrid('setGridParam',{
                 page:page
             }).trigger("reloadGrid");
 		}

@@ -1,133 +1,171 @@
-$(function () {
-    $("#jqGrid").jqGrid({
-        url: baseURL + 'asset/assetcategory/list',
-        datatype: "json",
-        colModel: [			
-			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '父类id', name: 'parentId', index: 'parent_id', width: 80 }, 			
-			{ label: '分类名称', name: 'name', index: 'name', width: 80 }, 			
-			{ label: '1~100 自然数， 值越小，越靠前', name: 'sortNum', index: 'sort_num', width: 80 }, 			
-			{ label: '分类编码', name: 'categoryCode', index: 'category_code', width: 80 }, 			
-			{ label: '更新人', name: 'updateName', index: 'update_name', width: 80 }, 			
-			{ label: '创建时间', name: 'createTime', index: 'create_time', width: 80 }, 			
-			{ label: '更新时间', name: 'updateTime', index: 'update_time', width: 80 }			
-        ],
-		viewrecords: true,
-        height: 385,
-        rowNum: 10,
-		rowList : [10,30,50],
-        rownumbers: true, 
-        rownumWidth: 25, 
-        autowidth:true,
-        multiselect: true,
-        pager: "#jqGridPager",
-        jsonReader : {
-            root: "page.list",
-            page: "page.currPage",
-            total: "page.totalPage",
-            records: "page.totalCount"
+var setting = {
+    data: {
+        simpleData: {
+            enable: true,
+            idKey: "categoryId",
+            pIdKey: "parentId",
+            rootPId: -1
         },
-        prmNames : {
-            page:"page", 
-            rows:"limit", 
-            order: "order"
-        },
-        gridComplete:function(){
-        	//隐藏grid底部滚动条
-        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+        key: {
+            url:"nourl"
         }
-    });
-});
+    }
+};
+var ztree;
 
 var vm = new Vue({
 	el:'#rrapp',
 	data:{
 		showList: true,
 		title: null,
-		assetCategory: {}
+		assetCategory: {
+            parentName:null,
+            parentId:0,
+            orderNum:0
+        }
 	},
 	methods: {
-		query: function () {
-			vm.reload();
-		},
+        getCategory: function(){
+            //加载部门树
+            $.get(baseURL + "asset/assetcategory/select", function(r){
+                ztree = $.fn.zTree.init($("#categoryTree"), setting, r.categoryList);
+                var node = ztree.getNodeByParam("categoryId", vm.assetCategory.parentId);
+                ztree.selectNode(node);
+
+                vm.assetCategory.parentName = node.name;
+            })
+        },
 		add: function(){
 			vm.showList = false;
 			vm.title = "新增";
-			vm.assetCategory = {};
+			vm.assetCategory = {parentName:null,parentId:0,orderNum:0};
+            vm.getCategory();
 		},
-		update: function (event) {
-			var id = getSelectedRow();
-			if(id == null){
-				return ;
-			}
-			vm.showList = false;
-            vm.title = "修改";
-            
-            vm.getInfo(id)
-		},
-		saveOrUpdate: function (event) {
-		    $('#btnSaveOrUpdate').button('loading').delay(1000).queue(function() {
-                var url = vm.assetCategory.id == null ? "asset/assetcategory/save" : "asset/assetcategory/update";
+        update: function () {
+            var categoryId = getCategoryId();
+            if(categoryId == null){
+                return ;
+            }
+
+            $.get(baseURL + "asset/assetcategory/info/"+categoryId, function(r){
+                vm.showList = false;
+                vm.title = "修改";
+                vm.assetCategory = r.assetCategory;
+
+                vm.getCategory();
+            });
+        },
+        del: function () {
+            var categoryId = getCategoryId();
+            if(categoryId == null){
+                return ;
+            }
+
+            confirm('确定要删除选中的记录？', function(){
                 $.ajax({
                     type: "POST",
-                    url: baseURL + url,
-                    contentType: "application/json",
-                    data: JSON.stringify(vm.assetCategory),
+                    url: baseURL + "asset/assetcategory/delete",
+                    data: "categoryId=" + categoryId,
                     success: function(r){
                         if(r.code === 0){
-                             layer.msg("操作成功", {icon: 1});
-                             vm.reload();
-                             $('#btnSaveOrUpdate').button('reset');
-                             $('#btnSaveOrUpdate').dequeue();
+                            alert('操作成功', function(){
+                                vm.reload();
+                            });
                         }else{
-                            layer.alert(r.msg);
-                            $('#btnSaveOrUpdate').button('reset');
-                            $('#btnSaveOrUpdate').dequeue();
+                            alert(r.msg);
                         }
                     }
                 });
-			});
-		},
-		del: function (event) {
-			var ids = getSelectedRows();
-			if(ids == null){
-				return ;
-			}
-			var lock = false;
-            layer.confirm('确定要删除选中的记录？', {
-                btn: ['确定','取消'] //按钮
-            }, function(){
-               if(!lock) {
-                    lock = true;
-		            $.ajax({
-                        type: "POST",
-                        url: baseURL + "asset/assetcategory/delete",
-                        contentType: "application/json",
-                        data: JSON.stringify(ids),
-                        success: function(r){
-                            if(r.code == 0){
-                                layer.msg("操作成功", {icon: 1});
-                                $("#jqGrid").trigger("reloadGrid");
-                            }else{
-                                layer.alert(r.msg);
-                            }
-                        }
-				    });
-			    }
-             }, function(){
-             });
-		},
-		getInfo: function(id){
-			$.get(baseURL + "asset/assetcategory/info/"+id, function(r){
-                vm.assetCategory = r.assetCategory;
             });
-		},
-		reload: function (event) {
-			vm.showList = true;
-			var page = $("#jqGrid").jqGrid('getGridParam','page');
-			$("#jqGrid").jqGrid('setGridParam',{ 
-                page:page
-            }).trigger("reloadGrid");
-		}
+        },
+
+        saveOrUpdate: function (event) {
+            var url = vm.assetCategory.categoryId == null ? "asset/assetcategory/save" : "asset/assetcategory/update";
+            $.ajax({
+                type: "POST",
+                url: baseURL + url,
+                contentType: "application/json",
+                data: JSON.stringify(vm.assetCategory),
+                success: function(r){
+                    if(r.code === 0){
+                        alert('操作成功', function(){
+                            vm.reload();
+                        });
+                    }else{
+                        alert(r.msg);
+                    }
+                }
+            });
+        },
+        categoryTree: function(){
+            layer.open({
+                type: 1,
+                offset: '50px',
+                skin: 'layui-layer-molv',
+                title: "选择部门",
+                area: ['300px', '450px'],
+                shade: 0,
+                shadeClose: false,
+                content: jQuery("#categoryLayer"),
+                btn: ['确定', '取消'],
+                btn1: function (index) {
+                    var node = ztree.getSelectedNodes();
+                    //选择上级部门
+                    vm.assetCategory.parentId = node[0].categoryId;
+                    vm.assetCategory.parentName = node[0].name;
+
+                    layer.close(index);
+                }
+            });
+        },
+        reload: function () {
+            vm.showList = true;
+            Category.table.refresh();
+        }
 	}
+});
+
+var Category = {
+    id: "categoryTable",
+    table: null,
+    layerIndex: -1
+};
+
+/**
+ * 初始化表格的列
+ */
+Category.initColumn = function () {
+    var columns = [
+        {field: 'selectItem', radio: true},
+        {title: '分类ID', field: 'categoryId', visible: false, align: 'center', valign: 'middle', width: '80px'},
+        {title: '分类名称', field: 'name', align: 'center', valign: 'middle', sortable: true, width: '180px'},
+        {title: '上级分类', field: 'parentName', align: 'center', valign: 'middle', sortable: true, width: '100px'},
+        {title: '排序号', field: 'sortNum', align: 'center', valign: 'middle', sortable: true, width: '100px'}]
+    return columns;
+};
+
+
+function getCategoryId () {
+    var selected = $('#categoryTable').bootstrapTreeTable('getSelections');
+    if (selected.length == 0) {
+        alert("请选择一条记录");
+        return null;
+    } else {
+        return selected[0].id;
+    }
+}
+
+$(function () {
+    $.get(baseURL + "asset/assetcategory/info", function(r){
+        var colunms = Category.initColumn();
+        var table = new TreeTable(Category.id, baseURL + "asset/assetcategory/list", colunms);
+        table.setRootCodeValue(r.categoryId);
+        table.setExpandColumn(2);
+        table.setIdField("categoryId");
+        table.setCodeField("categoryId");
+        table.setParentCodeField("parentId");
+        table.setExpandAll(false);
+        table.init();
+        Category.table = table;
+    });
 });

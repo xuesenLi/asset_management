@@ -8,13 +8,13 @@
 <div id="rrapp" v-cloak>
     <div v-show="showList">
         <div class="grid-btn">
-			<#if shiro.hasPermission("sys:asset:save")>
+			<#if shiro.hasPermission("asset:asset:save")>
             <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
 			</#if>
-			<#if shiro.hasPermission("sys:asset:update")>
+			<#if shiro.hasPermission("asset:asset:update")>
             <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
 			</#if>
-			<#if shiro.hasPermission("sys:asset:delete")>
+			<#if shiro.hasPermission("asset:asset:delete")>
             <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
 			</#if>
         </div>
@@ -37,24 +37,35 @@
                             <input type="text" class="form-control" v-model="asset.assetName" placeholder="资产名称"/>
                         </div>
                     </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">资产分类id</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.categoryId" placeholder="资产分类id"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">资产分类名称</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" style="cursor:pointer;" v-model="asset.categoryName" @click="categoryTree" readonly="readonly" placeholder="选择分类"/>
+                </div>
+            </div>
+											                    <!--<div class="form-group">
                         <div class="col-sm-2 control-label">资产分类名称</div>
                         <div class="col-sm-10">
+&lt;!&ndash;
                             <input type="text" class="form-control" v-model="asset.categoryName" placeholder="资产分类名称"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">所属组织id</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.orgId" placeholder="所属组织id"/>
-                        </div>
-                    </div>
+&ndash;&gt;
+                            <select class="form-control" id="categoryNameSelect"></select>
+                        </div>-->
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">所属部门</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" style="cursor:pointer;" v-model="asset.orgName" @click="deptTree" readonly="readonly" placeholder="所属部门"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">使用部门</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" style="cursor:pointer;" v-model="asset.useOrgName" @click="useDeptTree" readonly="readonly" placeholder="使用部门"/>
+                </div>
+            </div>
+<!--
 											                    <div class="form-group">
                         <div class="col-sm-2 control-label">所属组织名称</div>
                         <div class="col-sm-10">
@@ -62,35 +73,23 @@
                         </div>
                     </div>
 											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">使用组织id</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.useOrgId" placeholder="使用组织id"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
                         <div class="col-sm-2 control-label">使用组织名称</div>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" v-model="asset.useOrgName" placeholder="使用组织名称"/>
+
                         </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">使用人id, 从使用组织里面去查找</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.empId" placeholder="使用人id, 从使用组织里面去查找"/>
-                        </div>
-                    </div>
+                    </div>-->
 											                    <div class="form-group">
                         <div class="col-sm-2 control-label">使用人名称</div>
                         <div class="col-sm-10">
+<!--
                             <input type="text" class="form-control" v-model="asset.empName" placeholder="使用人名称"/>
+-->
+                            <select class="form-control" v-model="asset.empName" id="empNameSelect"></select>
                         </div>
                     </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">管理员id</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.adminUserid" placeholder="管理员id"/>
-                        </div>
-                    </div>
+
+
 											                    <div class="form-group">
                         <div class="col-sm-2 control-label">管理员名称</div>
                         <div class="col-sm-10">
@@ -98,15 +97,13 @@
                         </div>
                     </div>
 											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">区域id</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.areaId" placeholder="区域id"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
                         <div class="col-sm-2 control-label">区域名称</div>
                         <div class="col-sm-10">
+<!--
                             <input type="text" class="form-control" v-model="asset.areaName" placeholder="区域名称"/>
+-->
+                            <select class="form-control" v-model="asset.areaName" id="areaNameSelect"></select>
+
                         </div>
                     </div>
 											                    <div class="form-group">
@@ -169,12 +166,6 @@
                             <input type="text" class="form-control" v-model="asset.updateTime" placeholder="更新时间"/>
                         </div>
                     </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">0闲置、1在用、2借用、3维修中、4报废、5待审批。</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.assetStatus" placeholder="0闲置、1在用、2借用、3维修中、4报废、5待审批。"/>
-                        </div>
-                    </div>
 							            <div class="form-group">
                 <div class="col-sm-2 control-label"></div>
                 <input type="button" class="btn btn-primary" id="btnSaveOrUpdate" data-loading-text="保存中..." @click="saveOrUpdate" value="确定"/>
@@ -184,6 +175,15 @@
     </div>
 </div>
 
-<script src="${request.contextPath}/statics/js/modules/sys/asset.js?_${.now?long}"></script>
+<!-- 选择分类 -->
+<div id="categoryLayer" style="display: none;padding:10px;">
+    <ul id="categoryTree" class="ztree"></ul>
+</div>
+<!-- 选择部门 -->
+<div id="deptLayer" style="display: none;padding:10px;">
+    <ul id="deptTree" class="ztree"></ul>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/asset/asset.js?_${.now?long}"></script>
 </body>
 </html>

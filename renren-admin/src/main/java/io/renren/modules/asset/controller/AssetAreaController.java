@@ -1,9 +1,13 @@
 package io.renren.modules.asset.controller;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import io.renren.common.validator.ValidatorUtils;
+import io.renren.modules.asset.vo.ResponseVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,20 +24,21 @@ import io.renren.common.utils.R;
 
 
 /**
- * 
+ *
  *
  * @author lxs
  * @email sunlightcs@gmail.com
- * @date 2020-04-10 13:59:02
+ * @date 2020-04-10 14:29:07
  */
 @RestController
 @RequestMapping("asset/assetarea")
-public class AssetAreaController {
+@Slf4j
+public class AssetAreaController extends AbstractController {
     @Autowired
     private AssetAreaService assetAreaService;
 
     /**
-     * 列表
+     * 分页列表
      */
     @RequestMapping("/list")
     @RequiresPermissions("asset:assetarea:list")
@@ -42,6 +47,15 @@ public class AssetAreaController {
 
         return R.ok().put("page", page);
     }
+
+    @RequestMapping("/all")
+    //@RequiresPermissions("asset:assetarea:all")
+    public ResponseVo<List<AssetAreaEntity>> list(){
+        List<AssetAreaEntity> list = assetAreaService.list();
+
+        return ResponseVo.success(list);
+    }
+
 
 
     /**
@@ -61,8 +75,9 @@ public class AssetAreaController {
     @RequestMapping("/save")
     @RequiresPermissions("asset:assetarea:save")
     public R save(@RequestBody AssetAreaEntity assetArea){
+        assetArea.setUpdateName(getUser().getUsername());
+        log.info("保存 : assetArea = {}", assetArea);
         assetAreaService.save(assetArea);
-
         return R.ok();
     }
 
@@ -72,9 +87,12 @@ public class AssetAreaController {
     @RequestMapping("/update")
     @RequiresPermissions("asset:assetarea:update")
     public R update(@RequestBody AssetAreaEntity assetArea){
+        assetArea.setUpdateName(getUser().getUsername());
+        assetArea.setUpdateTime(new Date());
         ValidatorUtils.validateEntity(assetArea);
+
         assetAreaService.updateById(assetArea);
-        
+
         return R.ok();
     }
 

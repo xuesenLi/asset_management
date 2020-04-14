@@ -16,6 +16,8 @@ import io.renren.common.validator.Assert;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.common.validator.group.AddGroup;
 import io.renren.common.validator.group.UpdateGroup;
+import io.renren.modules.asset.vo.ResponseVo;
+import io.renren.modules.asset.vo.UserVo;
 import io.renren.modules.sys.entity.SysUserEntity;
 import io.renren.modules.sys.service.SysUserRoleService;
 import io.renren.modules.sys.service.SysUserService;
@@ -41,7 +43,16 @@ public class SysUserController extends AbstractController {
 	private SysUserService sysUserService;
 	@Autowired
 	private SysUserRoleService sysUserRoleService;
-	
+
+	/**
+	 * 根据部门查找用户
+	 */
+	@GetMapping("/getByDeptId/{deptId}")
+	public ResponseVo getByDeptId(@PathVariable("deptId") String deptId){
+		List<UserVo> userVos = sysUserService.getByDeptId(Long.parseLong(deptId));
+		return ResponseVo.success(userVos);
+	}
+
 	/**
 	 * 所有用户列表
 	 */
@@ -52,7 +63,7 @@ public class SysUserController extends AbstractController {
 
 		return R.ok().put("page", page);
 	}
-	
+
 	/**
 	 * 获取登录的用户信息
 	 */
@@ -60,7 +71,7 @@ public class SysUserController extends AbstractController {
 	public R info(){
 		return R.ok().put("user", getUser());
 	}
-	
+
 	/**
 	 * 修改登录用户密码
 	 */
@@ -73,16 +84,16 @@ public class SysUserController extends AbstractController {
 		password = ShiroUtils.sha256(password, getUser().getSalt());
 		//新密码
 		newPassword = ShiroUtils.sha256(newPassword, getUser().getSalt());
-				
+
 		//更新密码
 		boolean flag = sysUserService.updatePassword(getUserId(), password, newPassword);
 		if(!flag){
 			return R.error("原密码不正确");
 		}
-		
+
 		return R.ok();
 	}
-	
+
 	/**
 	 * 用户信息
 	 */
@@ -90,14 +101,14 @@ public class SysUserController extends AbstractController {
 	@RequiresPermissions("sys:user:info")
 	public R info(@PathVariable("userId") Long userId){
 		SysUserEntity user = sysUserService.getById(userId);
-		
+
 		//获取用户所属的角色列表
 		List<Long> roleIdList = sysUserRoleService.queryRoleIdList(userId);
 		user.setRoleIdList(roleIdList);
-		
+
 		return R.ok().put("user", user);
 	}
-	
+
 	/**
 	 * 保存用户
 	 */
@@ -106,12 +117,12 @@ public class SysUserController extends AbstractController {
 	@RequiresPermissions("sys:user:save")
 	public R save(@RequestBody SysUserEntity user){
 		ValidatorUtils.validateEntity(user, AddGroup.class);
-		
+
 		sysUserService.saveUser(user);
-		
+
 		return R.ok();
 	}
-	
+
 	/**
 	 * 修改用户
 	 */
@@ -122,10 +133,10 @@ public class SysUserController extends AbstractController {
 		ValidatorUtils.validateEntity(user, UpdateGroup.class);
 
 		sysUserService.update(user);
-		
+
 		return R.ok();
 	}
-	
+
 	/**
 	 * 删除用户
 	 */
@@ -136,13 +147,13 @@ public class SysUserController extends AbstractController {
 		if(ArrayUtils.contains(userIds, 1L)){
 			return R.error("系统管理员不能删除");
 		}
-		
+
 		if(ArrayUtils.contains(userIds, getUserId())){
 			return R.error("当前用户不能删除");
 		}
 
 		sysUserService.removeByIds(Arrays.asList(userIds));
-		
+
 		return R.ok();
 	}
 }
