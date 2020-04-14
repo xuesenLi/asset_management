@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.asset.dao.AssetDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.asset.entity.AssetEntity" id="assetMap">
+        <result property="id" column="id"/>
+        <result property="assetCode" column="asset_code"/>
+        <result property="assetName" column="asset_name"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="orgId" column="org_id"/>
+        <result property="orgName" column="org_name"/>
+        <result property="useOrgId" column="use_org_id"/>
+        <result property="useOrgName" column="use_org_name"/>
+        <result property="empId" column="emp_id"/>
+        <result property="empName" column="emp_name"/>
+        <result property="adminUserid" column="admin_userid"/>
+        <result property="adminUsername" column="admin_username"/>
+        <result property="areaId" column="area_id"/>
+        <result property="areaName" column="area_name"/>
+        <result property="storagePosition" column="storage_position"/>
+        <result property="standard" column="standard"/>
+        <result property="unit" column="unit"/>
+        <result property="worth" column="worth"/>
+        <result property="timeLimit" column="time_limit"/>
+        <result property="buyTime" column="buy_time"/>
+        <result property="supplier" column="supplier"/>
+        <result property="remarks" column="remarks"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="assetStatus" column="asset_status"/>
+    </resultMap>
+
+
+</mapper>

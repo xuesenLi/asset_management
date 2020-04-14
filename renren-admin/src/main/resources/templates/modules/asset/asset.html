@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+		<#include "/header.html">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+			<#if shiro.hasPermission("sys:asset:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			</#if>
+			<#if shiro.hasPermission("sys:asset:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+			<#if shiro.hasPermission("sys:asset:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			</#if>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+														                    <div class="form-group">
+                        <div class="col-sm-2 control-label">资产编码</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.assetCode" placeholder="资产编码"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">资产名称</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.assetName" placeholder="资产名称"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">资产分类id</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.categoryId" placeholder="资产分类id"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">资产分类名称</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.categoryName" placeholder="资产分类名称"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">所属组织id</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.orgId" placeholder="所属组织id"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">所属组织名称</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.orgName" placeholder="所属组织名称"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">使用组织id</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.useOrgId" placeholder="使用组织id"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">使用组织名称</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.useOrgName" placeholder="使用组织名称"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">使用人id, 从使用组织里面去查找</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.empId" placeholder="使用人id, 从使用组织里面去查找"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">使用人名称</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.empName" placeholder="使用人名称"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">管理员id</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.adminUserid" placeholder="管理员id"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">管理员名称</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.adminUsername" placeholder="管理员名称"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">区域id</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.areaId" placeholder="区域id"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">区域名称</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.areaName" placeholder="区域名称"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">存放地点</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.storagePosition" placeholder="存放地点"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">规格型号</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.standard" placeholder="规格型号"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">计量单位</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.unit" placeholder="计量单位"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">价值（元）</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.worth" placeholder="价值（元）"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">使用期限（月）</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.timeLimit" placeholder="使用期限（月）"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">购买日期</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.buyTime" placeholder="购买日期"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">供应商</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.supplier" placeholder="供应商"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">备注</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.remarks" placeholder="备注"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">创建时间</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.createTime" placeholder="创建时间"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">更新时间</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.updateTime" placeholder="更新时间"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">0闲置、1在用、2借用、3维修中、4报废、5待审批。</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="asset.assetStatus" placeholder="0闲置、1在用、2借用、3维修中、4报废、5待审批。"/>
+                        </div>
+                    </div>
+							            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" id="btnSaveOrUpdate" data-loading-text="保存中..." @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/sys/asset.js?_${.now?long}"></script>
+</body>
+</html>
