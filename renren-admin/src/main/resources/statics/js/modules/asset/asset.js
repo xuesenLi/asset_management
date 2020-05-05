@@ -1,8 +1,31 @@
 $(function () {
+    laydate.render({
+        elem: '#checkDateBefore'
+        , type: 'datetime'
+        , range: false
+        , done: function (value, date, endDate) {//控件选择完毕后的回调---点击日期、清空、现在、确定均会触发。
+            vm.asset.buyTime = value;
+        }
+    });
+
     $("#jqGrid").jqGrid({
         url: baseURL + 'asset/asset/list',
         datatype: "json",
         colModel: [
+            { label: '资产状态', name: 'assetStatus', index: 'asset_status', width: 80, formatter: function(value, options, row){
+                    if(value === 0)
+                        return '<span class="label label-info">闲置</span>';
+                    else if(value === 1)
+                        return '<span class="label label-success">在用</span>';
+                    else if(value === 2)
+                        return '<span class="label label-primary">借用</span>';
+                    else if(value === 3)
+                        return '<span class="label label-danger">维修中</span>';
+                    else if(value === 4)
+                        return '<span class="label label-default">报废</span>';
+                    else if(value === 5)
+                        return '<span class="label label-warning">待审批</span>';
+                } },
 			//{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
 			{ label: '资产编码', name: 'assetCode', index: 'asset_code', width: 80 },
 			{ label: '资产名称', name: 'assetName', index: 'asset_name', width: 80 },
@@ -23,12 +46,12 @@ $(function () {
 			//{ label: '计量单位', name: 'unit', index: 'unit', width: 80 },
 			//{ label: '价值（元）', name: 'worth', index: 'worth', width: 80 },
 			//{ label: '使用期限（月）', name: 'timeLimit', index: 'time_limit', width: 80 },
-			{ label: '购买日期', name: 'buyTime', index: 'buy_time', width: 80 },
+			{ label: '购买日期', name: 'buyTime', index: 'buy_time', width: 80 }
 			//{ label: '供应商', name: 'supplier', index: 'supplier', width: 80 },
 			//{ label: '备注', name: 'remarks', index: 'remarks', width: 80 },
 			//{ label: '创建时间', name: 'createTime', index: 'create_time', width: 80 },
 			//{ label: '更新时间', name: 'updateTime', index: 'update_time', width: 80 },
-			{ label: '资产状态', name: 'assetStatus', index: 'asset_status', width: 80 }
+
         ],
 		viewrecords: true,
         height: 385,
@@ -126,6 +149,25 @@ var vm = new Vue({
             vm.getArea();
 
 		},
+        update: function (event) {
+            var id = getSelectedRow();
+            if(id == null){
+                return ;
+            }
+            vm.showList = false;
+            vm.title = "修改";
+
+            //加载分类树
+            vm.getCategory();
+
+            //加载部门树
+            vm.getDept();
+
+            //加载区域下拉框。
+            vm.getArea();
+
+            vm.getInfo(id);
+        },
         getArea: function(){
 
             //清空
@@ -170,16 +212,7 @@ var vm = new Vue({
                 }
             })
         },
-		update: function (event) {
-			var id = getSelectedRow();
-			if(id == null){
-				return ;
-			}
-			vm.showList = false;
-            vm.title = "修改";
 
-            vm.getInfo(id)
-		},
 		saveOrUpdate: function (event) {
 		    $('#btnSaveOrUpdate').button('loading').delay(1000).queue(function() {
                 var url = vm.asset.id == null ? "asset/asset/save" : "asset/asset/update";

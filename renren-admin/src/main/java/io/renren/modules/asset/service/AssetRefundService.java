@@ -2,20 +2,18 @@ package io.renren.modules.asset.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.renren.common.utils.PageUtils;
-import io.renren.modules.asset.entity.AssetEntity;
-import io.renren.modules.asset.vo.ResponseVo;
+import io.renren.modules.asset.entity.AssetRefundEntity;
 
-import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * 
  *
  * @author lxs
  * @email sunlightcs@gmail.com
- * @date 2020-04-09 14:32:22
+ * @date 2020-04-24 10:07:31
  */
-public interface AssetService extends IService<AssetEntity> {
+public interface AssetRefundService extends IService<AssetRefundEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 }

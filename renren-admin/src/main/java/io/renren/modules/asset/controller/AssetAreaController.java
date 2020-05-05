@@ -103,7 +103,6 @@ public class AssetAreaController extends AbstractController {
     @RequiresPermissions("asset:assetarea:delete")
     public R delete(@RequestBody Integer[] areaIds){
         assetAreaService.removeByIds(Arrays.asList(areaIds));
-
         return R.ok();
     }
 

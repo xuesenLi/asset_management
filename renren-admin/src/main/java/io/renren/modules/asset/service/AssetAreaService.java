@@ -3,11 +3,13 @@ package io.renren.modules.asset.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.asset.entity.AssetAreaEntity;
+import io.renren.modules.asset.vo.ResponseVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * 
+ *
  *
  * @author lxs
  * @email sunlightcs@gmail.com
@@ -16,5 +18,8 @@ import java.util.Map;
 public interface AssetAreaService extends IService<AssetAreaEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+
+
 }
 

@@ -15,6 +15,9 @@ public enum ResponseEnum {
 
     PARAM_ERROR(3, "参数错误"),
 
+    DELETE_ASSET_FAIL(4, "只能够删除闲置和报废的资产呢"),
+
+
 
     ;
 

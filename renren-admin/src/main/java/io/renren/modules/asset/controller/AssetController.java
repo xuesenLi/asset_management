@@ -1,9 +1,11 @@
 package io.renren.modules.asset.controller;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 
 import io.renren.common.validator.ValidatorUtils;
+import io.renren.modules.asset.enums.AssetStatusEnum;
 import io.renren.modules.asset.enums.ResponseEnum;
 import io.renren.modules.asset.form.AssetForm;
 import io.renren.modules.asset.vo.ResponseVo;
@@ -101,10 +103,20 @@ public class AssetController {
      */
     @RequestMapping("/delete")
     @RequiresPermissions("asset:asset:delete")
-    public R delete(@RequestBody Integer[] ids){
-        assetService.removeByIds(Arrays.asList(ids));
+    public ResponseVo delete(@RequestBody Integer[] ids){
+        //只能删除 资产状态为 闲置， 报废的。
+        //1. 查询所有资产是否满足条件
+        Collection<AssetEntity> assetEntities = assetService.listByIds(Arrays.asList(ids));
+        for(AssetEntity asset : assetEntities){
+            if(!AssetStatusEnum.IDLE.getCode().equals(asset.getAssetStatus()) &&
+                    !AssetStatusEnum.SCRAP.getCode().equals(asset.getAssetStatus())){
+                return ResponseVo.error(ResponseEnum.DELETE_ASSET_FAIL);
+            }
+        }
 
-        return R.ok();
+        assetService.removeByIds(Arrays.asList(ids));
+        return ResponseVo.success();
+        //assetService.removeByIds(Arrays.asList(ids));
     }
 
 }
