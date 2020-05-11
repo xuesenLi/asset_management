@@ -140,7 +140,7 @@
                         <div class="col-sm-2 control-label">购买日期</div>
                         <div class="col-sm-10">
                             <!--<input type="text" class="form-control" v-model="asset.buyTime" placeholder="购买日期"/>-->
-                            <input type="text" class="form-control" id="checkDateBefore" v-model="asset.buyTime" @keyup.enter="query" placeholder="请选择购买日期">
+                            <input type="text" class="form-control" id="checkDateBefore" v-model="asset.buyTime" placeholder="请选择购买日期">
 
                         </div>
                     </div>
@@ -150,7 +150,7 @@
                             <input type="text" class="form-control" v-model="asset.supplier" placeholder="供应商"/>
                         </div>
                     </div>
-											                    <div class="form-group">
+											                     <div class="form-group">
                         <div class="col-sm-2 control-label">备注</div>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" v-model="asset.remarks" placeholder="备注"/>
@@ -173,7 +173,7 @@
 <div id="deptLayer" style="display: none;padding:10px;">
     <ul id="deptTree" class="ztree"></ul>
 </div>
-
+<script src="${request.contextPath}/statics/plugins/layui\lay/modules/laydate/laydate.js?_${.now?long}"></script>
 <script src="${request.contextPath}/statics/js/modules/asset/asset.js?_${.now?long}"></script>
 </body>
 </html>

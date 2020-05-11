@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.asset.dao.RecordDetailDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.asset.entity.RecordDetailEntity" id="recordDetailMap">
+        <result property="id" column="id"/>
+        <result property="recordNo" column="record_no"/>
+        <result property="assetId" column="asset_id"/>
+        <result property="createdTime" column="created_time"/>
+    </resultMap>
+
+    <insert id="batchInsert" parameterType="list">
+        insert into record_detail (record_no, asset_id)
+        values
+        <foreach collection="recordDetails" item="item" index="index" separator=",">
+        (
+            #{item.recordNo},
+            #{item.assetId}
+            )
+        </foreach>
+    </insert>
+
+
+</mapper>

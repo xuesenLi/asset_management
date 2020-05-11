@@ -4,13 +4,12 @@ import java.util.Arrays;
 import java.util.Map;
 
 import io.renren.common.validator.ValidatorUtils;
+import io.renren.modules.asset.entity.AssetEntity;
+import io.renren.modules.sys.controller.AbstractController;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.renren.modules.asset.entity.AssetRecipientEntity;
 import io.renren.modules.asset.service.AssetRecipientService;
@@ -20,7 +19,7 @@ import io.renren.common.utils.R;
 
 
 /**
- * 
+ *
  *
  * @author lxs
  * @email sunlightcs@gmail.com
@@ -28,7 +27,8 @@ import io.renren.common.utils.R;
  */
 @RestController
 @RequestMapping("asset/assetrecipient")
-public class AssetRecipientController {
+@Slf4j
+public class AssetRecipientController extends AbstractController {
     @Autowired
     private AssetRecipientService assetRecipientService;
 
@@ -61,8 +61,11 @@ public class AssetRecipientController {
     @RequestMapping("/save")
     @RequiresPermissions("asset:assetrecipient:save")
     public R save(@RequestBody AssetRecipientEntity assetRecipient){
-        assetRecipientService.save(assetRecipient);
-
+        //设置申请人， 申请人名
+        assetRecipient.setCreatedUserid(getUserId().intValue());
+        assetRecipient.setCreatedUsername(getUser().getUsername());
+        assetRecipientService.insert(assetRecipient);
+        log.info("asssetRecipient = {}", assetRecipient);
         return R.ok();
     }
 
@@ -74,7 +77,7 @@ public class AssetRecipientController {
     public R update(@RequestBody AssetRecipientEntity assetRecipient){
         ValidatorUtils.validateEntity(assetRecipient);
         assetRecipientService.updateById(assetRecipient);
-        
+
         return R.ok();
     }
 
@@ -87,6 +90,13 @@ public class AssetRecipientController {
         assetRecipientService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
+    }
+
+    @GetMapping("/getByRecordNo/{recordNo}")
+    public R getByRecordNo(@PathVariable("recordNo") String recordNo){
+        AssetRecipientEntity assetRecipientEntity = assetRecipientService.selectByRecordNo(recordNo);
+
+        return R.ok().put("data", assetRecipientEntity);
     }
 
 }

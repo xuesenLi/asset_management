@@ -1,12 +1,5 @@
 $(function () {
-    laydate.render({
-        elem: '#checkDateBefore'
-        , type: 'datetime'
-        , range: false
-        , done: function (value, date, endDate) {//控件选择完毕后的回调---点击日期、清空、现在、确定均会触发。
-            vm.asset.buyTime = value;
-        }
-    });
+
 
     $("#jqGrid").jqGrid({
         url: baseURL + 'asset/asset/list',
@@ -76,6 +69,15 @@ $(function () {
         gridComplete:function(){
         	//隐藏grid底部滚动条
         	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+        }
+    });
+
+    laydate.render({
+        elem: '#checkDateBefore'
+        , type: 'datetime'
+        , range: false
+        , done: function (value, date, endDate) {//控件选择完毕后的回调---点击日期、清空、现在、确定均会触发。
+            vm.asset.buyTime = value;
         }
     });
 });

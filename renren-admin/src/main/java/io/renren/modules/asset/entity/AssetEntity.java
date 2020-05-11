@@ -2,6 +2,7 @@ package io.renren.modules.asset.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -9,8 +10,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 
- * 
+ *
+ *
  * @author lxs
  * @email sunlightcs@gmail.com
  * @date 2020-04-09 14:32:22
@@ -104,6 +105,7 @@ public class AssetEntity implements Serializable {
 	/**
 	 * 购买日期
 	 */
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date buyTime;
 	/**
 	 * 供应商

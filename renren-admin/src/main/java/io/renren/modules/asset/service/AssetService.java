@@ -18,5 +18,10 @@ import java.util.Map;
 public interface AssetService extends IService<AssetEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    PageUtils queryPageByType(Map<String, Object> params);
+
+    PageUtils queryPageByIn(Map<String, Object> params, String recordNo);
+
 }
 

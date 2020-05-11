@@ -33,5 +33,17 @@
         <result property="assetStatus" column="asset_status"/>
     </resultMap>
 
+    <update id="batchUpdateByIds" parameterType="list">
+        update asset
+        set asset_status = 1
+        <where>
+            id in
+            <if test="assets != null">
+                <foreach collection="assets" item="item" separator="," index="index" open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </update>
 
 </mapper>

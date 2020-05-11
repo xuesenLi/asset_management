@@ -7,7 +7,7 @@ import io.renren.modules.asset.entity.AssetRecipientEntity;
 import java.util.Map;
 
 /**
- * 
+ *
  *
  * @author lxs
  * @email sunlightcs@gmail.com
@@ -16,5 +16,9 @@ import java.util.Map;
 public interface AssetRecipientService extends IService<AssetRecipientEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void insert(AssetRecipientEntity assetRecipient);
+
+    AssetRecipientEntity selectByRecordNo(String recordNo);
 }
 

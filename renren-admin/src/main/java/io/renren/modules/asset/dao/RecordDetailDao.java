@@ -1,6 +1,6 @@
 package io.renren.modules.asset.dao;
 
-import io.renren.modules.asset.entity.AssetEntity;
+import io.renren.modules.asset.entity.RecordDetailEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -12,15 +12,15 @@ import java.util.List;
  *
  * @author lxs
  * @email sunlightcs@gmail.com
- * @date 2020-04-09 14:32:22
+ * @date 2020-05-09 09:55:29
  */
 @Mapper
-public interface AssetDao extends BaseMapper<AssetEntity> {
+public interface RecordDetailDao extends BaseMapper<RecordDetailEntity> {
 
     /**
-     * 批量修改资产状态为 在用
-     * @param assets
+     * 批量插入
+     * @param recordDetails
      */
-    void batchUpdateByIds(@Param("assets") List<Integer> assets);
+    void batchInsert(@Param("recordDetails") List<RecordDetailEntity> recordDetails);
 
 }

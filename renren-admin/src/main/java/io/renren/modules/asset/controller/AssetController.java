@@ -52,6 +52,27 @@ public class AssetController {
         return R.ok().put("page", page);
     }
 
+    /**
+     * 获取指定状态的列表
+     */
+    @RequestMapping("/listByType")
+    public R listByType(@RequestParam Map<String, Object> params){
+        PageUtils page = assetService.queryPageByType(params);
+
+        return R.ok().put("page", page);
+    }
+
+    /**
+     * 获取指定  单号  的列表
+     */
+    @RequestMapping("/listByRecordNo/{recordNo}")
+    public R listByRecordNo(@RequestParam Map<String, Object> params,
+                            @PathVariable("recordNo") String recordNo){
+        PageUtils page = assetService.queryPageByIn(params, recordNo);
+
+        return R.ok().put("page", page);
+    }
+
 
     /**
      * 信息
