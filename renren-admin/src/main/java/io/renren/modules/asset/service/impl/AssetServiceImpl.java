@@ -65,6 +65,21 @@ public class AssetServiceImpl extends ServiceImpl<AssetDao, AssetEntity> impleme
         return new PageUtils(page);
     }
 
+    /**
+     * 获取资产状态为 借用的
+     * @param params
+     * @return
+     */
+    @Override
+    public PageUtils queryPageByTypeJY(Map<String, Object> params) {
+        IPage<AssetEntity> page = this.page(
+                new Query<AssetEntity>().getPage(params),
+                new QueryWrapper<AssetEntity>().eq("asset_status", AssetStatusEnum.BORROWING.getCode())
+        );
+
+        return new PageUtils(page);
+    }
+
     @Override
     public PageUtils queryPageByIn(Map<String, Object> params, String recordNo) {
         //1. 从单号详情表中查找 单号对应的资产id

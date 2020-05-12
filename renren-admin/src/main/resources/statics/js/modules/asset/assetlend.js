@@ -1,8 +1,9 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: baseURL + 'asset/assetrefund/list',
+        url: baseURL + 'asset/assetlend/list',
         datatype: "json",
         colModel: [
+            //0 待审批、1 已同意、2 被驳回、 3 --
             { label: '单据状态', name: 'recordStatus', index: 'record_status', width: 80, formatter:function (value, options, row) {
                     if(value === 0)
                         return '<span class="label label-warning">待审批</span>';
@@ -13,20 +14,18 @@ $(function () {
                     else if(value === 3)
                         return '<span> -- </span>';
                 } },
-            /*
-                        { label: 'id', name: 'id', index: 'id', width: 50, key: true },
-            */
-			{ label: '退还单号', name: 'recordNo', index: 'record_no', width: 80,
+            { label: '借用单号', name: 'recordNo', index: 'record_no', width: 80,
                 formatter: function (value, options, row) {
                     return '<a style="cursor: pointer" onclick="vm.recordNoDetail(\'' + value + '\')">' + value + '</a>'
                 }
             },
 			{ label: '资产数量', name: 'assetNum', index: 'asset_num', width: 80 },
-			{ label: '退还日期', name: 'actualTime', index: 'actual_time', width: 80 },
-			{ label: '退还备注', name: 'recordRemarks', index: 'record_remarks', width: 80 },
-/*
-			{ label: '申请人id', name: 'createdUserid', index: 'created_userid', width: 80 },
-*/
+			{ label: '借用组织', name: 'useOrgName', index: 'use_org_name', width: 80 },
+			{ label: '借用人', name: 'empName', index: 'emp_name', width: 80 },
+			{ label: '借用日期', name: 'actualTime', index: 'actual_time', width: 80 },
+			{ label: '预计归还日期', name: 'expectTime', index: 'expect_time', width: 80 },
+			{ label: '借用备注', name: 'recordRemarks', index: 'record_remarks', width: 80 },
+			/*{ label: '申请人id', name: 'createdUserid', index: 'created_userid', width: 80 },*/
 			{ label: '申请人', name: 'createdUsername', index: 'created_username', width: 80 },
 			{ label: '申请日期', name: 'createdTime', index: 'created_time', width: 80 }
         ],
@@ -55,32 +54,55 @@ $(function () {
         	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
         }
     });
-
     laydate.render({
         elem: '#checkDateBefore'
         , type: 'datetime'
         , range: false
         , done: function (value, date, endDate) {//控件选择完毕后的回调---点击日期、清空、现在、确定均会触发。
-            vm.assetRefund.actualTime = value;
+            vm.assetLend.actualTime = value;
         }
     });
-
-
+    laydate.render({
+        elem: '#checkDateBefore1'
+        , type: 'datetime'
+        , range: false
+        , done: function (value, date, endDate) {//控件选择完毕后的回调---点击日期、清空、现在、确定均会触发。
+            vm.assetLend.expectTime = value;
+        }
+    });
 });
+
+/*标识部门树*/
+var setting1 = {
+    data: {
+        simpleData: {
+            enable: true,
+            idKey: "deptId",
+            pIdKey: "parentId",
+            rootPId: -1
+        },
+        key: {
+            url:"nourl"
+        }
+    }
+};
+var ztree1;
+
 
 var vm = new Vue({
 	el:'#rrapp',
 	data:{
 		showList: true,
 		title: null,
-		assetRefund: {},
-
-        //资产退还弹框
+		assetLend: {
+            useOrgId:null,
+            useOrgName:null,
+            assets:[]
+        },
+        //资产领用弹框
         changeOwnerShow: false,
-
 	},
 	methods: {
-
         /**点击单号 查看详情 */
         recordNoDetail: function(value){
             /**
@@ -97,8 +119,63 @@ var vm = new Vue({
             });
         },
 
-        /** 资产领用弹框 */
+        getDept: function(){
+            //加载部门树
+            $.get(baseURL + "sys/dept/list", function(r){
+                ztree1 = $.fn.zTree.init($("#deptTree"), setting1, r);
+                var node = ztree1.getNodeByParam("deptId", vm.assetLend.useOrgId);
+                if(node != null){
+                    ztree1.selectNode(node);
+
+                    vm.assetLend.useOrgName = node.name;
+                }
+            })
+        },
+
+        useDeptTree: function(){
+            layer.open({
+                type: 1,
+                offset: '50px',
+                skin: 'layui-layer-molv',
+                title: "选择部门",
+                area: ['300px', '450px'],
+                shade: 0,
+                shadeClose: false,
+                content: jQuery("#deptLayer"),
+                btn: ['确定', '取消'],
+                btn1: function (index) {
+                    var node = ztree1.getSelectedNodes();
+                    //选择上级部门
+                    vm.assetLend.useOrgId = node[0].deptId;
+                    vm.assetLend.useOrgName = node[0].name;
+
+                    //清空
+                    $('#empNameSelect').empty();
+                    //点击使用部门后， 加载该部门下方的人员。
+                    $.get(baseURL + "sys/user/getByDeptId/"+ vm.assetLend.useOrgId, function(r){
+                        if(r.code === 0){
+                            var userList = r.data;
+                            for (var i = 0; i < userList.length; i++) {
+                                $('#empNameSelect').append("<option value="+userList[i].userId+">"+userList[i].username+"</option>");
+                            }
+                        }else{
+                            layer.alert(r.msg);
+                            $('#btnSave').button('reset');
+                            $('#btnSave').dequeue();
+                        }
+
+                    });
+
+                    layer.close(index);
+                }
+            });
+        },
+
+        /*资产借用弹框*/
         updateOwner: function () {
+
+            //加载部门树
+            vm.getDept();
 
             /**获取弹框表单数据 */
             vm.createOwnerTb();
@@ -114,6 +191,7 @@ var vm = new Vue({
                 cancel:function(){
                     $("#oQMobile").val('');
                     $("#oQUserName").val('');
+                    // createOwnerTb();
                 }
             });
         },
@@ -122,7 +200,7 @@ var vm = new Vue({
         createOwnerTb: function () {
 
             $("#ownerjqGrid").jqGrid({
-                url: baseURL + "asset/asset/listByTypeZY",
+                url: baseURL + "asset/asset/listByTypeXZ",
                 datatype: "json",
                 colModel: [
                     { label: '资产状态', name: 'assetStatus', index: 'asset_status', width: 80, formatter: function(value, options, row){
@@ -180,7 +258,6 @@ var vm = new Vue({
 
             //vm.isCreateTbed = true;
         },
-
         /*在弹框中选择多条记录**/
         getSelectedRows1: function(){
             var grid = $("#ownerjqGrid");
@@ -192,22 +269,22 @@ var vm = new Vue({
 
             return grid.getGridParam("selarrrow");
         },
-
         save: function (event){
             var ids = vm.getSelectedRows1();
             if(ids == null){
                 return ;
             }
-            //选择的资产集合
-            vm.assetRefund.assets = ids;
-            console.log(ids);
+            //下拉框 赋值
+            vm.assetLend.empName = $("#empNameSelect option:selected").text();
+            vm.assetLend.assets = ids;
+
             $('#btnSave').button('loading').delay(1000).queue(function() {
-                var url = "asset/assetrefund/save";
+                var url = "asset/assetlend/save";
                 $.ajax({
                     type: "POST",
                     url: baseURL + url,
                     contentType: "application/json",
-                    data: JSON.stringify(vm.assetRefund),
+                    data: JSON.stringify(vm.assetLend),
                     success: function(r){
                         if(r.code === 0){
                             layer.msg("操作成功", {icon: 1});
@@ -227,14 +304,13 @@ var vm = new Vue({
         },
 
 
-
-        query: function () {
+		query: function () {
 			vm.reload();
 		},
 		add: function(){
 			vm.showList = false;
 			vm.title = "新增";
-			vm.assetRefund = {};
+			vm.assetLend = {};
 		},
 		/*update: function (event) {
 			var id = getSelectedRow();
@@ -248,12 +324,12 @@ var vm = new Vue({
 		},
 		saveOrUpdate: function (event) {
 		    $('#btnSaveOrUpdate').button('loading').delay(1000).queue(function() {
-                var url = vm.assetRefund.id == null ? "asset/assetrefund/save" : "asset/assetrefund/update";
+                var url = vm.assetLend.id == null ? "asset/assetlend/save" : "asset/assetlend/update";
                 $.ajax({
                     type: "POST",
                     url: baseURL + url,
                     contentType: "application/json",
-                    data: JSON.stringify(vm.assetRefund),
+                    data: JSON.stringify(vm.assetLend),
                     success: function(r){
                         if(r.code === 0){
                              layer.msg("操作成功", {icon: 1});
@@ -282,7 +358,7 @@ var vm = new Vue({
                     lock = true;
 		            $.ajax({
                         type: "POST",
-                        url: baseURL + "asset/assetrefund/delete",
+                        url: baseURL + "asset/assetlend/delete",
                         contentType: "application/json",
                         data: JSON.stringify(ids),
                         success: function(r){
@@ -298,10 +374,9 @@ var vm = new Vue({
              }, function(){
              });
 		},*/
-
 		getInfo: function(id){
-			$.get(baseURL + "asset/assetrefund/info/"+id, function(r){
-                vm.assetRefund = r.assetRefund;
+			$.get(baseURL + "asset/assetlend/info/"+id, function(r){
+                vm.assetLend = r.assetLend;
             });
 		},
 		reload: function (event) {

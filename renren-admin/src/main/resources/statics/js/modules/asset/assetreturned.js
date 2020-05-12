@@ -1,6 +1,6 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: baseURL + 'asset/assetrefund/list',
+        url: baseURL + 'asset/assetreturned/list',
         datatype: "json",
         colModel: [
             { label: '单据状态', name: 'recordStatus', index: 'record_status', width: 80, formatter:function (value, options, row) {
@@ -13,20 +13,16 @@ $(function () {
                     else if(value === 3)
                         return '<span> -- </span>';
                 } },
-            /*
-                        { label: 'id', name: 'id', index: 'id', width: 50, key: true },
-            */
-			{ label: '退还单号', name: 'recordNo', index: 'record_no', width: 80,
+            { label: '归还单号', name: 'recordNo', index: 'record_no', width: 80,
                 formatter: function (value, options, row) {
                     return '<a style="cursor: pointer" onclick="vm.recordNoDetail(\'' + value + '\')">' + value + '</a>'
                 }
             },
+			{ label: 'id', name: 'id', hidden:true, index: 'id', width: 50, key: true },
 			{ label: '资产数量', name: 'assetNum', index: 'asset_num', width: 80 },
-			{ label: '退还日期', name: 'actualTime', index: 'actual_time', width: 80 },
-			{ label: '退还备注', name: 'recordRemarks', index: 'record_remarks', width: 80 },
-/*
-			{ label: '申请人id', name: 'createdUserid', index: 'created_userid', width: 80 },
-*/
+			{ label: '归还日期', name: 'actualTime', index: 'actual_time', width: 80 },
+			{ label: '归还备注', name: 'recordRemarks', index: 'record_remarks', width: 80 },
+			//{ label: '申请人id', name: 'createdUserid', index: 'created_userid', width: 80 },
 			{ label: '申请人', name: 'createdUsername', index: 'created_username', width: 80 },
 			{ label: '申请日期', name: 'createdTime', index: 'created_time', width: 80 }
         ],
@@ -61,10 +57,9 @@ $(function () {
         , type: 'datetime'
         , range: false
         , done: function (value, date, endDate) {//控件选择完毕后的回调---点击日期、清空、现在、确定均会触发。
-            vm.assetRefund.actualTime = value;
+            vm.assetReturned.actualTime = value;
         }
     });
-
 
 });
 
@@ -73,14 +68,12 @@ var vm = new Vue({
 	data:{
 		showList: true,
 		title: null,
-		assetRefund: {},
-
+		assetReturned: {},
         //资产退还弹框
-        changeOwnerShow: false,
+        changeOwnerShow: false
 
 	},
 	methods: {
-
         /**点击单号 查看详情 */
         recordNoDetail: function(value){
             /**
@@ -88,7 +81,7 @@ var vm = new Vue({
              */
             layer.open({
                 type: 2,
-                title: "领用单号详情",
+                title: "归还单号详情",
                 maxmin: true,
                 shadeClose: true,
                 shade: 0.5,
@@ -105,7 +98,7 @@ var vm = new Vue({
 
             layer.open({
                 type: 1,
-                title: "资产领用",
+                title: "资产归还",
                 maxmin: true,
                 shadeClose: true,
                 shade: 0.5,
@@ -122,7 +115,7 @@ var vm = new Vue({
         createOwnerTb: function () {
 
             $("#ownerjqGrid").jqGrid({
-                url: baseURL + "asset/asset/listByTypeZY",
+                url: baseURL + "asset/asset/listByTypeJY",
                 datatype: "json",
                 colModel: [
                     { label: '资产状态', name: 'assetStatus', index: 'asset_status', width: 80, formatter: function(value, options, row){
@@ -177,8 +170,6 @@ var vm = new Vue({
                     $("#ownerjqGrid").setGridWidth($(window).width() * 0.75);
                 }
             });
-
-            //vm.isCreateTbed = true;
         },
 
         /*在弹框中选择多条记录**/
@@ -199,15 +190,15 @@ var vm = new Vue({
                 return ;
             }
             //选择的资产集合
-            vm.assetRefund.assets = ids;
+            vm.assetReturned.assets = ids;
             console.log(ids);
             $('#btnSave').button('loading').delay(1000).queue(function() {
-                var url = "asset/assetrefund/save";
+                var url = "asset/assetreturned/save";
                 $.ajax({
                     type: "POST",
                     url: baseURL + url,
                     contentType: "application/json",
-                    data: JSON.stringify(vm.assetRefund),
+                    data: JSON.stringify(vm.assetReturned),
                     success: function(r){
                         if(r.code === 0){
                             layer.msg("操作成功", {icon: 1});
@@ -228,13 +219,14 @@ var vm = new Vue({
 
 
 
+
         query: function () {
 			vm.reload();
 		},
 		add: function(){
 			vm.showList = false;
 			vm.title = "新增";
-			vm.assetRefund = {};
+			vm.assetReturned = {};
 		},
 		/*update: function (event) {
 			var id = getSelectedRow();
@@ -248,12 +240,12 @@ var vm = new Vue({
 		},
 		saveOrUpdate: function (event) {
 		    $('#btnSaveOrUpdate').button('loading').delay(1000).queue(function() {
-                var url = vm.assetRefund.id == null ? "asset/assetrefund/save" : "asset/assetrefund/update";
+                var url = vm.assetReturned.id == null ? "asset/assetreturned/save" : "asset/assetreturned/update";
                 $.ajax({
                     type: "POST",
                     url: baseURL + url,
                     contentType: "application/json",
-                    data: JSON.stringify(vm.assetRefund),
+                    data: JSON.stringify(vm.assetReturned),
                     success: function(r){
                         if(r.code === 0){
                              layer.msg("操作成功", {icon: 1});
@@ -282,7 +274,7 @@ var vm = new Vue({
                     lock = true;
 		            $.ajax({
                         type: "POST",
-                        url: baseURL + "asset/assetrefund/delete",
+                        url: baseURL + "asset/assetreturned/delete",
                         contentType: "application/json",
                         data: JSON.stringify(ids),
                         success: function(r){
@@ -298,10 +290,9 @@ var vm = new Vue({
              }, function(){
              });
 		},*/
-
 		getInfo: function(id){
-			$.get(baseURL + "asset/assetrefund/info/"+id, function(r){
-                vm.assetRefund = r.assetRefund;
+			$.get(baseURL + "asset/assetreturned/info/"+id, function(r){
+                vm.assetReturned = r.assetReturned;
             });
 		},
 		reload: function (event) {

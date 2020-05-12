@@ -33,6 +33,13 @@ public interface AssetService extends IService<AssetEntity> {
      */
     PageUtils queryPageByTypeZY(Map<String, Object> params);
 
+    /**
+     * 获取资产状态为 在用的
+     * @param params
+     * @returnJ
+     */
+    PageUtils queryPageByTypeJY(Map<String, Object> params);
+
     PageUtils queryPageByIn(Map<String, Object> params, String recordNo);
 
 }

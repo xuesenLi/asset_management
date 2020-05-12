@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.asset.dao.AssetReturnedDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.asset.entity.AssetReturnedEntity" id="assetReturnedMap">
+        <result property="id" column="id"/>
+        <result property="recordNo" column="record_no"/>
+        <result property="assetNum" column="asset_num"/>
+        <result property="actualTime" column="actual_time"/>
+        <result property="recordRemarks" column="record_remarks"/>
+        <result property="createdUserid" column="created_userid"/>
+        <result property="createdUsername" column="created_username"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="recordStatus" column="record_status"/>
+    </resultMap>
+
+
+</mapper>

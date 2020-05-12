@@ -72,6 +72,16 @@ public class AssetController {
     }
 
     /**
+     * 获取资产状态为 借用的
+     */
+    @RequestMapping("/listByTypeJY")
+    public R listByTypeJY(@RequestParam Map<String, Object> params){
+        PageUtils page = assetService.queryPageByTypeJY(params);
+
+        return R.ok().put("page", page);
+    }
+
+    /**
      * 获取指定  单号  的列表
      */
     @RequestMapping("/listByRecordNo/{recordNo}")
