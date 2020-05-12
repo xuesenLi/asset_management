@@ -53,11 +53,20 @@ public class AssetController {
     }
 
     /**
-     * 获取指定状态的列表
+     * 获取资产状态为 闲置的
      */
-    @RequestMapping("/listByType")
-    public R listByType(@RequestParam Map<String, Object> params){
-        PageUtils page = assetService.queryPageByType(params);
+    @RequestMapping("/listByTypeXZ")
+    public R listByTypeXZ(@RequestParam Map<String, Object> params){
+        PageUtils page = assetService.queryPageByTypeXZ(params);
+
+        return R.ok().put("page", page);
+    }
+    /**
+     * 获取资产状态为 在用的
+     */
+    @RequestMapping("/listByTypeZY")
+    public R listByTypeZY(@RequestParam Map<String, Object> params){
+        PageUtils page = assetService.queryPageByTypeZY(params);
 
         return R.ok().put("page", page);
     }

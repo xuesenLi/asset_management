@@ -19,7 +19,19 @@ public interface AssetService extends IService<AssetEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
-    PageUtils queryPageByType(Map<String, Object> params);
+    /**
+     * 获取资产状态为 闲置的
+     * @param params
+     * @return
+     */
+    PageUtils queryPageByTypeXZ(Map<String, Object> params);
+
+    /**
+     * 获取资产状态为 在用的
+     * @param params
+     * @return
+     */
+    PageUtils queryPageByTypeZY(Map<String, Object> params);
 
     PageUtils queryPageByIn(Map<String, Object> params, String recordNo);
 

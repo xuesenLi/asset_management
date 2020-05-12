@@ -68,6 +68,7 @@ public class AssetRecipientEntity implements Serializable {
 	/**
 	 * 申请日期
 	 */
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date createdTime;
 	/**
 	 * 0 待审批、1 已同意、2 被驳回、 3 --

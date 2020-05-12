@@ -4,6 +4,7 @@ import io.renren.modules.asset.dao.AssetDao;
 import io.renren.modules.asset.dao.RecordDetailDao;
 import io.renren.modules.asset.dao.SequenceMapper;
 import io.renren.modules.asset.entity.RecordDetailEntity;
+import io.renren.modules.asset.enums.AssetStatusEnum;
 import io.renren.modules.asset.enums.RecordStatusEnum;
 import io.renren.modules.asset.enums.RecordTypeEnum;
 import io.renren.modules.asset.utils.GeneratorRecordNo;
@@ -46,7 +47,7 @@ public class AssetRecipientServiceImpl extends ServiceImpl<AssetRecipientDao, As
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AssetRecipientEntity> page = this.page(
                 new Query<AssetRecipientEntity>().getPage(params),
-                new QueryWrapper<AssetRecipientEntity>()
+                new QueryWrapper<AssetRecipientEntity>().orderByDesc("created_time")
         );
 
         return new PageUtils(page);
@@ -77,7 +78,7 @@ public class AssetRecipientServiceImpl extends ServiceImpl<AssetRecipientDao, As
         recordDetailDao.batchInsert(recordDetailEntitys);
 
         //批量修改  当前操作的资产状态为 在用
-        assetDao.batchUpdateByIds(assetRecipient.getAssets());
+        assetDao.batchUpdateByIds(assetRecipient.getAssets(), AssetStatusEnum.IN_USE.getCode());
     }
 
     @Override

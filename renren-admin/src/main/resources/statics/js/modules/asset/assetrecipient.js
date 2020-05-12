@@ -104,8 +104,6 @@ var vm = new Vue({
         },
         //资产领用弹框
         changeOwnerShow: false,
-        isCreateTbed: false
-
 	},
 	methods: {
 
@@ -113,13 +111,9 @@ var vm = new Vue({
         recordNoDetail: function(value){
             /*资产领用弹框, 需要数据回显。value ： 单号*/
             /*通过单号返回数据 */
-            $.get(baseURL + "asset/assetrecipient/getByRecordNo/" + value, function (r) {
+   /*         $.get(baseURL + "asset/assetrecipient/getByRecordNo/" + value, function (r) {
                 vm.assetRecipient = r.data;
-            })
-
-            /**获取弹框表单数据 先清空 */
-            //vm.createOwnerTb(value);
-
+            })*/
             /**
              * iframe 弹出层
              */
@@ -218,7 +212,7 @@ var vm = new Vue({
         createOwnerTb: function () {
 
             $("#ownerjqGrid").jqGrid({
-                url: baseURL + "asset/asset/listByType",
+                url: baseURL + "asset/asset/listByTypeXZ",
                 datatype: "json",
                 colModel: [
                     { label: '资产状态', name: 'assetStatus', index: 'asset_status', width: 80, formatter: function(value, options, row){
@@ -277,15 +271,6 @@ var vm = new Vue({
             //vm.isCreateTbed = true;
         },
 
-        /**资产领用确认**/
-        oQuery: function () {
-            var ids = vm.getSelectedRows1();
-            if(ids == null){
-                return ;
-            }
-            console.log(ids);
-        },
-
         /*在弹框中选择多条记录**/
         getSelectedRows1: function(){
             var grid = $("#ownerjqGrid");
@@ -338,7 +323,8 @@ var vm = new Vue({
                             vm.reload();
                             $('#btnSave').button('reset');
                             $('#btnSave').dequeue();
-                            vm.changeOwnerShow = false;
+                            //刷新页面
+                            window.location.reload();
                         }else{
                             layer.alert(r.msg);
                             $('#btnSave').button('reset');
@@ -348,7 +334,7 @@ var vm = new Vue({
                 });
             });
         },
-		saveOrUpdate: function (event) {
+		/*saveOrUpdate: function (event) {
 		    $('#btnSaveOrUpdate').button('loading').delay(1000).queue(function() {
                 var url = vm.assetRecipient.id == null ? "asset/assetrecipient/save" : "asset/assetrecipient/update";
                 $.ajax({
@@ -370,8 +356,8 @@ var vm = new Vue({
                     }
                 });
 			});
-		},
-		del: function (event) {
+		},*/
+		/*del: function (event) {
 			var ids = getSelectedRows();
 			if(ids == null){
 				return ;
@@ -399,7 +385,7 @@ var vm = new Vue({
 			    }
              }, function(){
              });
-		},
+		},*/
 		getInfo: function(id){
 			$.get(baseURL + "asset/assetrecipient/info/"+id, function(r){
                 vm.assetRecipient = r.assetRecipient;

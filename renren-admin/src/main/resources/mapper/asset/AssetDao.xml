@@ -35,7 +35,7 @@
 
     <update id="batchUpdateByIds" parameterType="list">
         update asset
-        set asset_status = 1
+        set asset_status = #{status}
         <where>
             id in
             <if test="assets != null">

@@ -92,6 +92,11 @@ public class AssetRecipientController extends AbstractController {
         return R.ok();
     }
 
+    /**
+     * 通过
+     * @param recordNo
+     * @return
+     */
     @GetMapping("/getByRecordNo/{recordNo}")
     public R getByRecordNo(@PathVariable("recordNo") String recordNo){
         AssetRecipientEntity assetRecipientEntity = assetRecipientService.selectByRecordNo(recordNo);

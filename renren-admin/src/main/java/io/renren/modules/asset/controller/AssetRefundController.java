@@ -20,7 +20,7 @@ import io.renren.common.utils.R;
 
 
 /**
- * 
+ *
  *
  * @author lxs
  * @email sunlightcs@gmail.com
@@ -28,7 +28,7 @@ import io.renren.common.utils.R;
  */
 @RestController
 @RequestMapping("asset/assetrefund")
-public class AssetRefundController {
+public class AssetRefundController extends AbstractController {
     @Autowired
     private AssetRefundService assetRefundService;
 
@@ -61,8 +61,10 @@ public class AssetRefundController {
     @RequestMapping("/save")
     @RequiresPermissions("asset:assetrefund:save")
     public R save(@RequestBody AssetRefundEntity assetRefund){
-        assetRefundService.save(assetRefund);
-
+        //设置申请人， 申请人名
+        assetRefund.setCreatedUsername(getUser().getUsername());
+        assetRefund.setCreatedUserid(getUserId().intValue());
+        assetRefundService.insert(assetRefund);
         return R.ok();
     }
 
@@ -74,7 +76,7 @@ public class AssetRefundController {
     public R update(@RequestBody AssetRefundEntity assetRefund){
         ValidatorUtils.validateEntity(assetRefund);
         assetRefundService.updateById(assetRefund);
-        
+
         return R.ok();
     }
 

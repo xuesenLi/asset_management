@@ -7,7 +7,7 @@ import io.renren.modules.asset.entity.AssetRefundEntity;
 import java.util.Map;
 
 /**
- * 
+ *
  *
  * @author lxs
  * @email sunlightcs@gmail.com
@@ -16,5 +16,11 @@ import java.util.Map;
 public interface AssetRefundService extends IService<AssetRefundEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /**
+     * 插入退还记录
+     * @param assetRefund
+     */
+    void insert(AssetRefundEntity assetRefund);
 }
 

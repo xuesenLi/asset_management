@@ -2,13 +2,12 @@ package io.renren.modules.asset.service.impl;
 
 import io.renren.modules.asset.dao.RecordDetailDao;
 import io.renren.modules.asset.entity.RecordDetailEntity;
+import io.renren.modules.asset.enums.AssetStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -30,7 +29,7 @@ public class AssetServiceImpl extends ServiceImpl<AssetDao, AssetEntity> impleme
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AssetEntity> page = this.page(
                 new Query<AssetEntity>().getPage(params),
-                new QueryWrapper<AssetEntity>()
+                new QueryWrapper<AssetEntity>().orderByDesc("create_time")
         );
 
         return new PageUtils(page);
@@ -42,10 +41,25 @@ public class AssetServiceImpl extends ServiceImpl<AssetDao, AssetEntity> impleme
      * @return
      */
     @Override
-    public PageUtils queryPageByType(Map<String, Object> params) {
+    public PageUtils queryPageByTypeXZ(Map<String, Object> params) {
         IPage<AssetEntity> page = this.page(
                 new Query<AssetEntity>().getPage(params),
-                new QueryWrapper<AssetEntity>().eq("asset_status",0)
+                new QueryWrapper<AssetEntity>().eq("asset_status", AssetStatusEnum.IDLE.getCode())
+        );
+
+        return new PageUtils(page);
+    }
+
+    /**
+     * 获取资产状态为 在用的
+     * @param params
+     * @return
+     */
+    @Override
+    public PageUtils queryPageByTypeZY(Map<String, Object> params) {
+        IPage<AssetEntity> page = this.page(
+                new Query<AssetEntity>().getPage(params),
+                new QueryWrapper<AssetEntity>().eq("asset_status", AssetStatusEnum.IN_USE.getCode())
         );
 
         return new PageUtils(page);

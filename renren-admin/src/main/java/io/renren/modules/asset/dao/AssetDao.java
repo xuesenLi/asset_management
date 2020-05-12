@@ -21,6 +21,6 @@ public interface AssetDao extends BaseMapper<AssetEntity> {
      * 批量修改资产状态为 在用
      * @param assets
      */
-    void batchUpdateByIds(@Param("assets") List<Integer> assets);
+    void batchUpdateByIds(@Param("assets") List<Integer> assets, @Param("status") Integer status);
 
 }
