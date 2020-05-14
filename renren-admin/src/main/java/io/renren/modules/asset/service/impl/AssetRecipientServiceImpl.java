@@ -8,6 +8,7 @@ import io.renren.modules.asset.enums.AssetStatusEnum;
 import io.renren.modules.asset.enums.RecordStatusEnum;
 import io.renren.modules.asset.enums.RecordTypeEnum;
 import io.renren.modules.asset.utils.GeneratorRecordNo;
+import io.renren.modules.asset.vo.AssetUsedVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,7 +79,13 @@ public class AssetRecipientServiceImpl extends ServiceImpl<AssetRecipientDao, As
         recordDetailDao.batchInsert(recordDetailEntitys);
 
         //批量修改  当前操作的资产状态为 在用
-        assetDao.batchUpdateByIds(assetRecipient.getAssets(), AssetStatusEnum.IN_USE.getCode());
+        AssetUsedVo assetUsedVo = new AssetUsedVo();
+        assetUsedVo.setEmpId(assetRecipient.getEmpId());
+        assetUsedVo.setEmpName(assetRecipient.getEmpName());
+        assetUsedVo.setUseOrgId(assetRecipient.getUseOrgId());
+        assetUsedVo.setUseOrgName(assetRecipient.getUseOrgName());
+        assetUsedVo.setAssetStatus(AssetStatusEnum.IN_USE.getCode());
+        assetDao.batchUpdateByIds1(assetRecipient.getAssets(), assetUsedVo);
     }
 
     @Override

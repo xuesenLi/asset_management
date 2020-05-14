@@ -23,4 +23,10 @@ public interface RecordDetailDao extends BaseMapper<RecordDetailEntity> {
      */
     void batchInsert(@Param("recordDetails") List<RecordDetailEntity> recordDetails);
 
+    /**
+     * 通过单号查看详情 资产列表
+     * @param recordNo
+     * @return
+     */
+    List<Integer> selectByRecordNo(@Param("recordNo") String recordNo);
 }

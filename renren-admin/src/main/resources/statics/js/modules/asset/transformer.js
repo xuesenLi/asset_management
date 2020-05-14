@@ -20,7 +20,7 @@ $(function () {
 						return '<span class="label label-danger">维修中</span>';
 					else if(value === 4)
 						return '<span class="label label-default">报废</span>';
-					else if(value === 5)
+					else
 						return '<span class="label label-warning">待审批</span>';
 				} },
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true, hidden: true },

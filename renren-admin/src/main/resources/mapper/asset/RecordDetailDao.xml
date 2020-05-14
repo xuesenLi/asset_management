@@ -22,5 +22,9 @@
         </foreach>
     </insert>
 
+    <select id="selectByRecordNo" parameterType="string" resultType="java.lang.Integer">
+        select asset_id from record_detail
+        where record_no = #{recordNo}
+    </select>
 
 </mapper>

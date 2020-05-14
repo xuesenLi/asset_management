@@ -7,6 +7,7 @@ import io.renren.modules.asset.enums.AssetStatusEnum;
 import io.renren.modules.asset.enums.RecordStatusEnum;
 import io.renren.modules.asset.enums.RecordTypeEnum;
 import io.renren.modules.asset.utils.GeneratorRecordNo;
+import io.renren.modules.asset.vo.AssetUsedVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,7 +61,7 @@ public class AssetLendServiceImpl extends ServiceImpl<AssetLendDao, AssetLendEnt
         assetLend.setRecordStatus(RecordStatusEnum.AGREED.getCode());
         log.info("assetLend = {}", assetLend);
         //2. 入库
-        //退还单号 入库
+        //借用单号 入库
         baseMapper.insert(assetLend);
 
         List<RecordDetailEntity> recordDetailEntitys = new ArrayList<>();
@@ -75,7 +76,13 @@ public class AssetLendServiceImpl extends ServiceImpl<AssetLendDao, AssetLendEnt
         recordDetailDao.batchInsert(recordDetailEntitys);
 
         //批量修改  当前操作的资产状态为 借用
-        assetDao.batchUpdateByIds(assetLend.getAssets(), AssetStatusEnum.BORROWING.getCode());
+        AssetUsedVo assetUsedVo = new AssetUsedVo();
+        assetUsedVo.setEmpId(assetLend.getEmpId());
+        assetUsedVo.setEmpName(assetLend.getEmpName());
+        assetUsedVo.setUseOrgId(assetLend.getUseOrgId());
+        assetUsedVo.setUseOrgName(assetLend.getUseOrgName());
+        assetUsedVo.setAssetStatus(AssetStatusEnum.BORROWING.getCode());
+        assetDao.batchUpdateByIds1(assetLend.getAssets(), assetUsedVo);
     }
 
 }

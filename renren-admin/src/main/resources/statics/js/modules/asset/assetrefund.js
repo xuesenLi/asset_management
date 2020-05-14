@@ -88,7 +88,7 @@ var vm = new Vue({
              */
             layer.open({
                 type: 2,
-                title: "领用单号详情",
+                title: "退还单号详情",
                 maxmin: true,
                 shadeClose: true,
                 shade: 0.5,
@@ -105,7 +105,7 @@ var vm = new Vue({
 
             layer.open({
                 type: 1,
-                title: "资产领用",
+                title: "资产退还",
                 maxmin: true,
                 shadeClose: true,
                 shade: 0.5,

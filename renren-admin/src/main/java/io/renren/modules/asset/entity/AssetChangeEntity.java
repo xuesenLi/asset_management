@@ -15,57 +15,66 @@ import java.util.List;
  *
  * @author lxs
  * @email sunlightcs@gmail.com
- * @date 2020-05-12 13:28:50
+ * @date 2020-05-12 17:31:52
  */
 @Data
-@TableName("asset_lend")
-public class AssetLendEntity implements Serializable {
+@TableName("asset_change")
+public class AssetChangeEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 资产借用id
+	 * 资产变更id
 	 */
 	@TableId
 	private Integer id;
 	/**
-	 * 借用单号
+	 * 变更单号
 	 */
 	private String recordNo;
 	/**
 	 * 当前操作资产数量
 	 */
 	private Integer assetNum;
-
+	/**
+	 * 变更备注
+	 */
+	private String recordRemarks;
+	/**
+	 * 资产名称
+	 */
+	private String assetName;
+	/**
+	 * 资产分类id
+	 */
+	private Integer categoryId;
+	/**
+	 * 所属组织id
+	 */
+	private Integer orgId;
 	/**
 	 * 使用组织id
 	 */
 	private Integer useOrgId;
 	/**
-	 * 使用组织名称
-	 */
-	private String useOrgName;
-	/**
 	 * 使用人id, 从使用组织里面去查找
 	 */
 	private Integer empId;
 	/**
-	 * 使用人名称
+	 * 管理员id
 	 */
-	private String empName;
+	private Integer adminUserid;
 	/**
-	 * 借用日期
+	 * 区域id
 	 */
-	@JsonFormat(pattern="yyyy-MM-dd")
-	private Date actualTime;
+	private Integer areaId;
 	/**
-	 * 预计归还日期
+	 * 审批人
 	 */
-	@JsonFormat(pattern="yyyy-MM-dd")
-	private Date expectTime;
+	private Integer approverId;
 	/**
-	 * 借用备注
+	 * 改变内容
 	 */
-	private String recordRemarks;
+	private String changeContent;
 	/**
 	 * 申请人id
 	 */
@@ -86,5 +95,36 @@ public class AssetLendEntity implements Serializable {
 
 	@TableField(exist=false)
 	private List<Integer> assets;
+
+
+	/**
+	 * 资产分类名称
+	 */
+	@TableField(exist=false)
+	private String categoryName;
+
+	/**
+	 * 所属组织名称
+	 */
+	@TableField(exist=false)
+	private String orgName;
+
+	/**
+	 * 使用组织名称
+	 */
+	@TableField(exist=false)
+	private String useOrgName;
+
+	/**
+	 * 使用人名称
+	 */
+	@TableField(exist=false)
+	private String empName;
+
+	/**
+	 * 区域名称
+	 */
+	@TableField(exist=false)
+	private String areaName;
 
 }

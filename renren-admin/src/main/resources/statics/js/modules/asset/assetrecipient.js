@@ -307,6 +307,7 @@ var vm = new Vue({
                 return ;
             }
             //下拉框 赋值
+            vm.assetRecipient.empId = $("#empNameSelect option:selected").val();
             vm.assetRecipient.empName = $("#empNameSelect option:selected").text();
             vm.assetRecipient.assets = ids;
 

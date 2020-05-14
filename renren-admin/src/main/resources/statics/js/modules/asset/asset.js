@@ -5,6 +5,7 @@ $(function () {
         url: baseURL + 'asset/asset/list',
         datatype: "json",
         colModel: [
+
             { label: '资产状态', name: 'assetStatus', index: 'asset_status', width: 80, formatter: function(value, options, row){
                     if(value === 0)
                         return '<span class="label label-info">闲置</span>';
@@ -16,7 +17,7 @@ $(function () {
                         return '<span class="label label-danger">维修中</span>';
                     else if(value === 4)
                         return '<span class="label label-default">报废</span>';
-                    else if(value === 5)
+                    else
                         return '<span class="label label-warning">待审批</span>';
                 } },
 			//{ label: 'id', name: 'id', index: 'id', width: 50, key: true },

@@ -8,8 +8,12 @@
         <result property="id" column="id"/>
         <result property="recordNo" column="record_no"/>
         <result property="assetNum" column="asset_num"/>
+
+        <result property="useOrgId" column="use_org_id"/>
         <result property="useOrgName" column="use_org_name"/>
+        <result property="empId" column="emp_id"/>
         <result property="empName" column="emp_name"/>
+
         <result property="actualTime" column="actual_time"/>
         <result property="expectTime" column="expect_time"/>
         <result property="recordRemarks" column="record_remarks"/>

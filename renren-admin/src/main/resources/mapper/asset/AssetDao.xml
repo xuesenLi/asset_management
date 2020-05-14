@@ -35,7 +35,66 @@
 
     <update id="batchUpdateByIds" parameterType="list">
         update asset
-        set asset_status = #{status}
+        <set>
+            <if test="status != null">
+                asset_status = #{status},
+            </if>
+            <if test="status == 0">
+                use_org_id = null,
+                use_org_name = null,
+                emp_id = null,
+                emp_name = null,
+            </if>
+        </set>
+
+        <where>
+            id in
+            <if test="assets != null">
+                <foreach collection="assets" item="item" separator="," index="index" open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <update id="batchUpdateByIds1">
+        update asset
+        <set>
+            <if test="assetUsedVo != null">
+                asset_status = #{assetUsedVo.assetStatus},
+                use_org_id = #{assetUsedVo.useOrgId},
+                use_org_name = #{assetUsedVo.useOrgName},
+                emp_id = #{assetUsedVo.empId},
+                emp_name = #{assetUsedVo.empName},
+            </if>
+        </set>
+
+        <where>
+            id in
+            <if test="assets != null">
+                <foreach collection="assets" item="item" separator="," index="index" open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <update id="batchAssetStatusAdd10" parameterType="list">
+        update asset
+        set asset_status = asset_status + 10
+        <where>
+            id in
+            <if test="assets != null">
+                <foreach collection="assets" item="item" separator="," index="index" open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <update id="batchAssetStatusReduce10" parameterType="list">
+        update asset
+        set asset_status = asset_status - 10
         <where>
             id in
             <if test="assets != null">

@@ -5,6 +5,8 @@ import io.renren.modules.asset.entity.RecordDetailEntity;
 import io.renren.modules.asset.enums.AssetStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -75,6 +77,29 @@ public class AssetServiceImpl extends ServiceImpl<AssetDao, AssetEntity> impleme
         IPage<AssetEntity> page = this.page(
                 new Query<AssetEntity>().getPage(params),
                 new QueryWrapper<AssetEntity>().eq("asset_status", AssetStatusEnum.BORROWING.getCode())
+        );
+
+        return new PageUtils(page);
+    }
+
+    /**
+     * 获取资产状态为 闲置、在用、借用
+     * @param params
+     * @return
+     */
+    @Override
+    public PageUtils queryPageByTypeXZJ(Map<String, Object> params) {
+
+        //构建 资产状态为 闲置、在用、借用 的集合
+        List<Integer> assetStatusList = new ArrayList<>();
+        assetStatusList.add(AssetStatusEnum.IDLE.getCode());
+        assetStatusList.add(AssetStatusEnum.IN_USE.getCode());
+        assetStatusList.add(AssetStatusEnum.BORROWING.getCode());
+
+        IPage<AssetEntity> page = this.page(
+                new Query<AssetEntity>().getPage(params),
+                new QueryWrapper<AssetEntity>()
+                .in("asset_status", assetStatusList)
         );
 
         return new PageUtils(page);

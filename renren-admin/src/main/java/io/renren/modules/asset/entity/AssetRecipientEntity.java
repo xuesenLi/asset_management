@@ -36,11 +36,19 @@ public class AssetRecipientEntity implements Serializable {
 	 */
 	private Integer assetNum;
 	/**
-	 * 领用组织
+	 * 使用组织id
+	 */
+	private Integer useOrgId;
+	/**
+	 * 使用组织名称
 	 */
 	private String useOrgName;
 	/**
-	 * 领用人
+	 * 使用人id, 从使用组织里面去查找
+	 */
+	private Integer empId;
+	/**
+	 * 使用人名称
 	 */
 	private String empName;
 	/**

@@ -82,6 +82,16 @@ public class AssetController {
     }
 
     /**
+     * 获取资产状态为 闲置、在用、借用
+     */
+    @RequestMapping("/listByTypeXZJ")
+    public R listByTypeXZJ(@RequestParam Map<String, Object> params){
+        PageUtils page = assetService.queryPageByTypeXZJ(params);
+
+        return R.ok().put("page", page);
+    }
+
+    /**
      * 获取指定  单号  的列表
      */
     @RequestMapping("/listByRecordNo/{recordNo}")
