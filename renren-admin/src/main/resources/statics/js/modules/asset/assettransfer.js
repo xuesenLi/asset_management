@@ -1,6 +1,6 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: baseURL + 'asset/assetchange/list',
+        url: baseURL + 'asset/assettransfer/list',
         datatype: "json",
         colModel: [
             //0 待审批、1 已同意、2 被驳回、 3 --
@@ -14,28 +14,24 @@ $(function () {
                     else if(value === 3)
                         return '<span> -- </span>';
                 } },
-            /*{ label: 'id', name: 'id', index: 'id', width: 50, key: true },*/
-            { label: '变更单号', name: 'recordNo', index: 'record_no', width: 80,
+            { label: '调拨单号', name: 'recordNo', index: 'record_no', width: 80,
                 formatter: function (value, options, row) {
                     return '<a style="cursor: pointer" onclick="vm.recordNoDetail(\'' + value + '\')">' + value + '</a>'
                 }
             },
 			{ label: 'id', hidden:true, name: 'id', index: 'id', width: 50, key: true },
-			{ label: '资产数量', name: 'assetNum', index: 'asset_num', width: 80 },
-			//{ label: '申请日期', name: 'actualTime', index: 'actual_time', width: 80 },
-            { label: '改变内容', name: 'changeContent', index: 'change_content', width: 120 },
-            { label: '变更备注', name: 'recordRemarks', index: 'record_remarks', width: 80 },
-			/*{ label: '资产名称', name: 'assetName', index: 'asset_name', width: 80 },
-			{ label: '资产分类id', name: 'customTypeId', index: 'custom_type_id', width: 80 },
-			{ label: '所属组织id', name: 'orgId', index: 'org_id', width: 80 },
+			{ label: '当前操作资产数量', name: 'assetNum', index: 'asset_num', width: 80 },
+		/*	{ label: '所属组织id', name: 'orgId', index: 'org_id', width: 80 },
 			{ label: '使用组织id', name: 'useOrgId', index: 'use_org_id', width: 80 },
-			{ label: '使用人id, 从使用组织里面去查找', name: 'empId', index: 'emp_id', width: 80 },
-			{ label: '管理员id', name: 'adminUserid', index: 'admin_userid', width: 80 },
-			{ label: '区域id', name: 'areaId', index: 'area_id', width: 80 },
-			{ label: '审批人', name: 'approverId', index: 'approver_id', width: 80 },
-			{ label: '申请人id', name: 'createdUserid', index: 'created_userid', width: 80 },*/
-			{ label: '申请人', name: 'createdUsername', index: 'created_username', width: 80 },
-			{ label: '申请日期', name: 'createdTime', index: 'created_time', width: 80 }
+			{ label: '使用人id, 从使用组织里面去查找', name: 'empId', index: 'emp_id', width: 80 },*/
+            { label: '调拨后所属部门', name: 'orgName', index: 'org_name', width: 80 },
+            { label: '调拨后使用部门', name: 'useOrgName', index: 'use_org_name', width: 80 },
+            { label: '调拨后使用人', name: 'empName', index: 'emp_name', width: 80 },
+            { label: '调拨备注', name: 'recordRemarks', index: 'record_remarks', width: 80 },
+            { label: '调拨日期', name: 'actualTime', index: 'actual_time', width: 80 },
+			//{ label: '申请人id', name: 'createdUserid', index: 'created_userid', width: 80 },
+			{ label: '申请人名', name: 'createdUsername', index: 'created_username', width: 80 },
+			{ label: '申请日期', name: 'createdTime', index: 'created_time', width: 80 },
         ],
 		viewrecords: true,
         height: 385,
@@ -62,23 +58,15 @@ $(function () {
         	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
         }
     });
-});
-
-/*标识分类树*/
-var setting = {
-    data: {
-        simpleData: {
-            enable: true,
-            idKey: "categoryId",
-            pIdKey: "parentId",
-            rootPId: -1
-        },
-        key: {
-            url:"nourl"
+    laydate.render({
+        elem: '#checkDateBefore'
+        , type: 'datetime'
+        , range: false
+        , done: function (value, date, endDate) {//控件选择完毕后的回调---点击日期、清空、现在、确定均会触发。
+            vm.assetTransfer.actualTime = value;
         }
-    }
-};
-var ztree;
+    });
+});
 
 /*标识部门树*/
 var setting1 = {
@@ -102,15 +90,13 @@ var vm = new Vue({
 	data:{
 		showList: true,
 		title: null,
-		assetChange: {
-            categoryId:null,
-            categoryName:null,
+		assetTransfer: {
             useOrgId:null,
             useOrgName:null,
             orgId:null,
             orgName:null
         },
-        //资产变更弹框
+        //资产调拨弹框
         changeOwnerShow: false,
 	},
 	methods: {
@@ -118,7 +104,7 @@ var vm = new Vue({
         recordNoDetail: function(value){
             layer.open({
                 type: 2,
-                title: "变更单号详情",
+                title: "调拨单号详情",
                 maxmin: true,
                 shadeClose: true,
                 shade: 0.5,
@@ -127,17 +113,14 @@ var vm = new Vue({
             });
         },
 
-        /**  资产变更 弹框  */
+        /**  资产调拨 弹框  */
         updateOwner: function () {
 
             //加载部门树
             vm.getDept();
 
             //加载区域下拉框
-            vm.getArea();
-
-            //加载分类树
-            vm.getCategory();
+            //vm.getArea();
 
             /**获取弹框表单数据 */
             vm.createOwnerTb();
@@ -157,14 +140,14 @@ var vm = new Vue({
             });
         },
 
-        /**获取弹框表单数据
-         * 资产变更 需要 获取 资产状态为 ： 闲置、在用、借用
+        /** 获取弹框表单数据
+         * 资产调拨 需要 获取 资产状态为 ： 闲置
          *
          * */
         createOwnerTb: function () {
 
             $("#ownerjqGrid").jqGrid({
-                url: baseURL + "asset/asset/listByTypeXZJ",
+                url: baseURL + "asset/asset/listByTypeXZ",
                 datatype: "json",
                 colModel: [
                     { label: '资产状态', name: 'assetStatus', index: 'asset_status', width: 80, formatter: function(value, options, row){
@@ -233,74 +216,18 @@ var vm = new Vue({
             return grid.getGridParam("selarrrow");
         },
 
-
-
-        /**加载区域下拉框。*/
-        getArea: function(){
-            //清空
-            $('#areaNameSelect').empty();
-            $.get(baseURL + "asset/assetarea/all", function (r) {
-                if(r.code === 0){
-                    var areaList = r.data;
-                    $('#areaNameSelect').append("<option value= null>"+  "" + "</option>");
-                    for (var i = 0; i < areaList.length; i++) {
-                        $('#areaNameSelect').append("<option value="+areaList[i].areaId+">"+areaList[i].areaName+"</option>");
-                    }
-
-                }else{
-                    layer.alert(r.msg);
-                    $('#btnSaveOrUpdate').button('reset');
-                    $('#btnSaveOrUpdate').dequeue();
-                }
-            })
-        },
-
         /**  加载部门树  */
         getDept: function(){
             $.get(baseURL + "sys/dept/list", function(r){
                 ztree1 = $.fn.zTree.init($("#deptTree"), setting1, r);
-                var node = ztree1.getNodeByParam("deptId", vm.assetChange.useOrgId);
+                var node = ztree1.getNodeByParam("deptId", vm.assetTransfer.useOrgId);
                 if(node != null){
                     ztree1.selectNode(node);
-                    vm.assetChange.useOrgName = node.name;
+                    vm.assetTransfer.useOrgName = node.name;
                 }
             })
         },
 
-        /**  加载 分类树  */
-        getCategory: function(){
-            //list 不加入一级分类
-            $.get(baseURL + "asset/assetcategory/list", function(r){
-                ztree = $.fn.zTree.init($("#categoryTree"), setting, r);
-                var node = ztree.getNodeByParam("categoryId", vm.assetChange.categoryId);
-                if(node != null){
-                    ztree.selectNode(node);
-                    vm.assetChange.categoryName = node.name;
-                }
-            })
-        },
-
-        categoryTree: function(){
-            layer.open({
-                type: 1,
-                offset: '50px',
-                skin: 'layui-layer-molv',
-                title: "选择分类",
-                area: ['300px', '450px'],
-                shade: 0,
-                shadeClose: false,
-                content: jQuery("#categoryLayer"),
-                btn: ['确定', '取消'],
-                btn1: function (index) {
-                    var node = ztree.getSelectedNodes();
-                    //选择上级部门
-                    vm.assetChange.categoryId = node[0].categoryId;
-                    vm.assetChange.categoryName = node[0].name;
-
-                    layer.close(index);
-                }
-            });
-        },
 
         deptTree: function(){
             layer.open({
@@ -316,8 +243,8 @@ var vm = new Vue({
                 btn1: function (index) {
                     var node = ztree1.getSelectedNodes();
                     //选择上级部门
-                    vm.assetChange.orgId = node[0].deptId;
-                    vm.assetChange.orgName = node[0].name;
+                    vm.assetTransfer.orgId = node[0].deptId;
+                    vm.assetTransfer.orgName = node[0].name;
 
                     layer.close(index);
                 }
@@ -337,13 +264,13 @@ var vm = new Vue({
                 btn1: function (index) {
                     var node = ztree1.getSelectedNodes();
                     //选择上级部门
-                    vm.assetChange.useOrgId = node[0].deptId;
-                    vm.assetChange.useOrgName = node[0].name;
+                    vm.assetTransfer.useOrgId = node[0].deptId;
+                    vm.assetTransfer.useOrgName = node[0].name;
 
                     //清空
                     $('#empNameSelect').empty();
                     //点击使用部门后， 加载该部门下方的人员。
-                    $.get(baseURL + "sys/user/getByDeptId/"+ vm.assetChange.useOrgId, function(r){
+                    $.get(baseURL + "sys/user/getByDeptId/"+ vm.assetTransfer.useOrgId, function(r){
                         if(r.code === 0){
                             var userList = r.data;
                             // $("#productNameSelect").append("<option value='-1'>--请选择--</option>");
@@ -369,20 +296,18 @@ var vm = new Vue({
                 return ;
             }
             //下拉框 赋值
-            vm.assetChange.empId = $("#empNameSelect option:selected").val();
-            vm.assetChange.empName = $("#empNameSelect option:selected").text();
-            vm.assetChange.areaId = $("#areaNameSelect option:selected").val();
-            vm.assetChange.areaName = $("#areaNameSelect option:selected").text();
+            vm.assetTransfer.empId = $("#empNameSelect option:selected").val();
+            vm.assetTransfer.empName = $("#empNameSelect option:selected").text();
 
-            vm.assetChange.assets = ids;
+            vm.assetTransfer.assets = ids;
 
             $('#btnSave').button('loading').delay(1000).queue(function() {
-                var url = "asset/assetchange/save";
+                var url = "asset/assettransfer/save";
                 $.ajax({
                     type: "POST",
                     url: baseURL + url,
                     contentType: "application/json",
-                    data: JSON.stringify(vm.assetChange),
+                    data: JSON.stringify(vm.assetTransfer),
                     success: function(r){
                         if(r.code === 0){
                             layer.msg("操作成功", {icon: 1});
@@ -401,13 +326,16 @@ var vm = new Vue({
             });
         },
 
-		query: function () {
+
+
+
+        query: function () {
 			vm.reload();
 		},
 		add: function(){
 			vm.showList = false;
 			vm.title = "新增";
-			vm.assetChange = {};
+			vm.assetTransfer = {};
 		},
 		/*update: function (event) {
 			var id = getSelectedRow();
@@ -421,12 +349,12 @@ var vm = new Vue({
 		},
 		saveOrUpdate: function (event) {
 		    $('#btnSaveOrUpdate').button('loading').delay(1000).queue(function() {
-                var url = vm.assetChange.id == null ? "asset/assetchange/save" : "asset/assetchange/update";
+                var url = vm.assetTransfer.id == null ? "asset/assettransfer/save" : "asset/assettransfer/update";
                 $.ajax({
                     type: "POST",
                     url: baseURL + url,
                     contentType: "application/json",
-                    data: JSON.stringify(vm.assetChange),
+                    data: JSON.stringify(vm.assetTransfer),
                     success: function(r){
                         if(r.code === 0){
                              layer.msg("操作成功", {icon: 1});
@@ -455,7 +383,7 @@ var vm = new Vue({
                     lock = true;
 		            $.ajax({
                         type: "POST",
-                        url: baseURL + "asset/assetchange/delete",
+                        url: baseURL + "asset/assettransfer/delete",
                         contentType: "application/json",
                         data: JSON.stringify(ids),
                         success: function(r){
@@ -472,8 +400,8 @@ var vm = new Vue({
              });
 		},*/
 		getInfo: function(id){
-			$.get(baseURL + "asset/assetchange/info/"+id, function(r){
-                vm.assetChange = r.assetChange;
+			$.get(baseURL + "asset/assettransfer/info/"+id, function(r){
+                vm.assetTransfer = r.assetTransfer;
             });
 		},
 		reload: function (event) {

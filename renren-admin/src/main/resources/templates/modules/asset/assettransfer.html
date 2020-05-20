@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+		<#include "/header.html">
+    <style>
+        .col-sm-2 {
+            width: 13% !important;
+            padding-top: 7px;
+            margin-bottom: 0;
+            text-align: right;
+        }
+        .row {
+            border-top: 0px;
+            margin: 0;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+			<#if shiro.hasPermission("asset:assettransfer:save")>
+            <a class="btn btn-primary" @click="updateOwner"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<!--</#if>
+			<#if shiro.hasPermission("asset:assettransfer:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+			<#if shiro.hasPermission("asset:assettransfer:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			</#if>-->
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+<!--    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+														                    <div class="form-group">
+                        <div class="col-sm-2 control-label">调拨单号</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="assetTransfer.recordNo" placeholder="调拨单号"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">当前操作资产数量</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="assetTransfer.assetNum" placeholder="当前操作资产数量"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">所属组织id</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="assetTransfer.orgId" placeholder="所属组织id"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">使用组织id</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="assetTransfer.useOrgId" placeholder="使用组织id"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">使用人id, 从使用组织里面去查找</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="assetTransfer.empId" placeholder="使用人id, 从使用组织里面去查找"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">调拨日期</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="assetTransfer.actualTime" placeholder="调拨日期"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">调拨备注</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="assetTransfer.recordRemarks" placeholder="调拨备注"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">申请人id</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="assetTransfer.createdUserid" placeholder="申请人id"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">申请人名</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="assetTransfer.createdUsername" placeholder="申请人名"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">申请日期</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="assetTransfer.createdTime" placeholder="申请日期"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">0 待审批、1 已同意、2 被驳回、 3 &#45;&#45;</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="assetTransfer.recordStatus" placeholder="0 待审批、1 已同意、2 被驳回、 3 &#45;&#45;"/>
+                        </div>
+                    </div>
+							            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" id="btnSaveOrUpdate" data-loading-text="保存中..." @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>-->
+
+
+    <div id="changeOwnerShow" style="display: none;">
+        <div>
+            <div class="row">
+                <label class="col-sm-2 control-labe">调拨后所属部门</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" style="cursor:pointer;" v-model="assetTransfer.orgName" @click="deptTree" readonly="readonly" placeholder="所属部门"/>
+                </div>
+                <label class="col-sm-2 control-label">调拨后使用部门</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" style="cursor:pointer;" v-model="assetTransfer.useOrgName" @click="useDeptTree" readonly="readonly" placeholder="使用部门"/>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-sm-2 control-label">调拨后使用人</label>
+                <div class="col-sm-4">
+                    <select class="form-control" v-model="assetTransfer.empName" id="empNameSelect"></select>
+                </div>
+                <label class="col-sm-2 control-label">调拨日期</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" id="checkDateBefore" v-model="assetTransfer.actualTime" placeholder="调拨日期">
+
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-sm-2 control-label">调拨备注</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" v-model="assetTransfer.recordRemarks" placeholder="领用备注"/>
+                </div>
+                <div class="col-sm-1">
+                    <input type="button" class="btn btn-primary" id="btnSave" data-loading-text="保存中..." @click="save" value="确定"/>
+                </div>
+            </div>
+
+            <!--<a class="btn btn-success"  @click="changeOwner"><i class="fa fa-search"></i>&nbsp;更改责任人</a>-->
+        </div>
+        <table id="ownerjqGrid"></table>
+        <div id="ownerjqGridPager"></div>
+    </div>
+
+</div>
+
+<!-- 选择部门 -->
+<div id="deptLayer" style="display: none;padding:10px;">
+    <ul id="deptTree" class="ztree"></ul>
+</div>
+
+<script src="${request.contextPath}/statics/plugins/layui\lay/modules/laydate/laydate.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/modules/asset/assettransfer.js?_${.now?long}"></script>
+</body>
+</html>

@@ -196,6 +196,7 @@ public class AssetChangeServiceImpl extends ServiceImpl<AssetChangeDao, AssetCha
         queryWrapper.eq("record_no", recordNo);
         AssetChangeEntity assetChangeEntity = baseMapper.selectOne(queryWrapper);
         assetEntity.setAssetName(assetChangeEntity.getAssetName());
+        //TODO  id 没修改问题
         if(!StringUtils.isEmpty(assetChangeEntity.getCategoryId()))
             assetEntity.setCategoryName(assetCategoryDao.selectById(assetChangeEntity.getCategoryId()).getName());
         if(!StringUtils.isEmpty(assetChangeEntity.getOrgId()))

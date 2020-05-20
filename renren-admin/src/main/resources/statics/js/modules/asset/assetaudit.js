@@ -92,15 +92,41 @@ var vm = new Vue({
 
         /**点击单号 查看详情 */
         recordNoDetail: function(value){
-            layer.open({
-                type: 2,
-                title: "审批单号详情",
-                maxmin: true,
-                shadeClose: true,
-                shade: 0.5,
-                area: ['98vw', '98vh'],
-                content: 'transformer_audit.html?recordNo=' + value
-            });
+
+            var str = value.substr(0, 2);
+            if(str === "BG"){
+                //资产变更 弹框
+                layer.open({
+                    type: 2,
+                    title: "审批单号详情",
+                    maxmin: true,
+                    shadeClose: true,
+                    shade: 0.5,
+                    area: ['98vw', '98vh'],
+                    content: 'transformer_audit.html?recordNo=' + value
+                });
+            }
+
+            if(str === "DB"){
+                //资产调拨 弹框
+                layer.open({
+                    type: 2,
+                    title: "审批单号详情",
+                    maxmin: true,
+                    shadeClose: true,
+                    shade: 0.5,
+                    area: ['98vw', '98vh'],
+                    content: 'transformer_transfer.html?recordNo=' + value
+                });
+            }
+
+
+
+
+
+
+
+
         },
 
 		query: function () {
