@@ -1,6 +1,6 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: baseURL + 'asset/assettransfer/list',
+        url: baseURL + 'asset/assetscrap/list',
         datatype: "json",
         colModel: [
             //0 待审批、1 已同意、2 被驳回、 3 --
@@ -21,14 +21,8 @@ $(function () {
             },
 			{ label: 'id', hidden:true, name: 'id', index: 'id', width: 50, key: true },
 			{ label: '资产数量', name: 'assetNum', index: 'asset_num', width: 80 },
-		/*	{ label: '所属组织id', name: 'orgId', index: 'org_id', width: 80 },
-			{ label: '使用组织id', name: 'useOrgId', index: 'use_org_id', width: 80 },
-			{ label: '使用人id, 从使用组织里面去查找', name: 'empId', index: 'emp_id', width: 80 },*/
-            { label: '调拨后所属部门', name: 'orgName', index: 'org_name', width: 80 },
-            { label: '调拨后使用部门', name: 'useOrgName', index: 'use_org_name', width: 80 },
-            { label: '调拨后使用人', name: 'empName', index: 'emp_name', width: 80 },
-            { label: '调拨备注', name: 'recordRemarks', index: 'record_remarks', width: 80 },
-            { label: '调拨日期', name: 'actualTime', index: 'actual_time', width: 80 },
+			{ label: '报废日期', name: 'actualTime', index: 'actual_time', width: 80 },
+			{ label: '报废备注', name: 'recordRemarks', index: 'record_remarks', width: 80 },
 			//{ label: '申请人id', name: 'createdUserid', index: 'created_userid', width: 80 },
 			{ label: '申请人名', name: 'createdUsername', index: 'created_username', width: 80 },
 			{ label: '申请日期', name: 'createdTime', index: 'created_time', width: 80 },
@@ -58,53 +52,32 @@ $(function () {
         	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
         }
     });
+
     laydate.render({
         elem: '#checkDateBefore'
         , type: 'datetime'
         , range: false
         , done: function (value, date, endDate) {//控件选择完毕后的回调---点击日期、清空、现在、确定均会触发。
-            vm.assetTransfer.actualTime = value;
+            vm.assetScrap.actualTime = value;
         }
     });
+
 });
-
-/*标识部门树*/
-var setting1 = {
-    data: {
-        simpleData: {
-            enable: true,
-            idKey: "deptId",
-            pIdKey: "parentId",
-            rootPId: -1
-        },
-        key: {
-            url:"nourl"
-        }
-    }
-};
-var ztree1;
-
 
 var vm = new Vue({
 	el:'#rrapp',
 	data:{
 		showList: true,
 		title: null,
-		assetTransfer: {
-            useOrgId:null,
-            useOrgName:null,
-            orgId:null,
-            orgName:null
-        },
-        //资产调拨弹框
-        changeOwnerShow: false,
+		assetScrap: {}
 	},
 	methods: {
+
         /**点击单号 查看详情 */
         recordNoDetail: function(value){
             layer.open({
                 type: 2,
-                title: "调拨单号详情",
+                title: "报废单号详情",
                 maxmin: true,
                 shadeClose: true,
                 shade: 0.5,
@@ -116,18 +89,12 @@ var vm = new Vue({
         /**  资产调拨 弹框  */
         updateOwner: function () {
 
-            //加载部门树
-            vm.getDept();
-
-            //加载区域下拉框
-            //vm.getArea();
-
             /**获取弹框表单数据 */
             vm.createOwnerTb();
 
             layer.open({
                 type: 1,
-                title: "资产调拨",
+                title: "资产报废",
                 maxmin: true,
                 shadeClose: true,
                 shade: 0.5,
@@ -141,7 +108,7 @@ var vm = new Vue({
         },
 
         /** 获取弹框表单数据
-         * 资产调拨 需要 获取 资产状态为 ： 闲置
+         * 资产报废 需要 获取 资产状态为 ： 闲置
          *
          * */
         createOwnerTb: function () {
@@ -216,98 +183,20 @@ var vm = new Vue({
             return grid.getGridParam("selarrrow");
         },
 
-        /**  加载部门树  */
-        getDept: function(){
-            $.get(baseURL + "sys/dept/list", function(r){
-                ztree1 = $.fn.zTree.init($("#deptTree"), setting1, r);
-                var node = ztree1.getNodeByParam("deptId", vm.assetTransfer.useOrgId);
-                if(node != null){
-                    ztree1.selectNode(node);
-                    vm.assetTransfer.useOrgName = node.name;
-                }
-            })
-        },
-
-
-        deptTree: function(){
-            layer.open({
-                type: 1,
-                offset: '50px',
-                skin: 'layui-layer-molv',
-                title: "选择部门",
-                area: ['300px', '450px'],
-                shade: 0,
-                shadeClose: false,
-                content: jQuery("#deptLayer"),
-                btn: ['确定', '取消'],
-                btn1: function (index) {
-                    var node = ztree1.getSelectedNodes();
-                    //选择上级部门
-                    vm.assetTransfer.orgId = node[0].deptId;
-                    vm.assetTransfer.orgName = node[0].name;
-
-                    layer.close(index);
-                }
-            });
-        },
-        useDeptTree: function(){
-            layer.open({
-                type: 1,
-                offset: '50px',
-                skin: 'layui-layer-molv',
-                title: "选择部门",
-                area: ['300px', '450px'],
-                shade: 0,
-                shadeClose: false,
-                content: jQuery("#deptLayer"),
-                btn: ['确定', '取消'],
-                btn1: function (index) {
-                    var node = ztree1.getSelectedNodes();
-                    //选择上级部门
-                    vm.assetTransfer.useOrgId = node[0].deptId;
-                    vm.assetTransfer.useOrgName = node[0].name;
-
-                    //清空
-                    $('#empNameSelect').empty();
-                    //点击使用部门后， 加载该部门下方的人员。
-                    $.get(baseURL + "sys/user/getByDeptId/"+ vm.assetTransfer.useOrgId, function(r){
-                        if(r.code === 0){
-                            var userList = r.data;
-                            // $("#productNameSelect").append("<option value='-1'>--请选择--</option>");
-                            for (var i = 0; i < userList.length; i++) {
-                                $('#empNameSelect').append("<option value="+userList[i].userId+">"+userList[i].username+"</option>");
-                            }
-                        }else{
-                            layer.alert(r.msg);
-                            $('#btnSave').button('reset');
-                            $('#btnSave').dequeue();
-                        }
-
-                    });
-
-                    layer.close(index);
-                }
-            });
-        },
-
         save: function (event){
             var ids = vm.getSelectedRows1();
             if(ids == null){
                 return ;
             }
-            //下拉框 赋值
-            vm.assetTransfer.empId = $("#empNameSelect option:selected").val();
-            vm.assetTransfer.empName = $("#empNameSelect option:selected").text();
-
-            vm.assetTransfer.assets = ids;
+            vm.assetScrap.assets = ids;
 
             $('#btnSave').button('loading').delay(1000).queue(function() {
-                var url = "asset/assettransfer/save";
+                var url = "asset/assetscrap/save";
                 $.ajax({
                     type: "POST",
                     url: baseURL + url,
                     contentType: "application/json",
-                    data: JSON.stringify(vm.assetTransfer),
+                    data: JSON.stringify(vm.assetScrap),
                     success: function(r){
                         if(r.code === 0){
                             layer.msg("操作成功", {icon: 1});
@@ -327,15 +216,13 @@ var vm = new Vue({
         },
 
 
-
-
-        query: function () {
+		query: function () {
 			vm.reload();
 		},
 		add: function(){
 			vm.showList = false;
 			vm.title = "新增";
-			vm.assetTransfer = {};
+			vm.assetScrap = {};
 		},
 		/*update: function (event) {
 			var id = getSelectedRow();
@@ -349,12 +236,12 @@ var vm = new Vue({
 		},
 		saveOrUpdate: function (event) {
 		    $('#btnSaveOrUpdate').button('loading').delay(1000).queue(function() {
-                var url = vm.assetTransfer.id == null ? "asset/assettransfer/save" : "asset/assettransfer/update";
+                var url = vm.assetScrap.id == null ? "asset/assetscrap/save" : "asset/assetscrap/update";
                 $.ajax({
                     type: "POST",
                     url: baseURL + url,
                     contentType: "application/json",
-                    data: JSON.stringify(vm.assetTransfer),
+                    data: JSON.stringify(vm.assetScrap),
                     success: function(r){
                         if(r.code === 0){
                              layer.msg("操作成功", {icon: 1});
@@ -383,7 +270,7 @@ var vm = new Vue({
                     lock = true;
 		            $.ajax({
                         type: "POST",
-                        url: baseURL + "asset/assettransfer/delete",
+                        url: baseURL + "asset/assetscrap/delete",
                         contentType: "application/json",
                         data: JSON.stringify(ids),
                         success: function(r){
@@ -400,8 +287,8 @@ var vm = new Vue({
              });
 		},*/
 		getInfo: function(id){
-			$.get(baseURL + "asset/assettransfer/info/"+id, function(r){
-                vm.assetTransfer = r.assetTransfer;
+			$.get(baseURL + "asset/assetscrap/info/"+id, function(r){
+                vm.assetScrap = r.assetScrap;
             });
 		},
 		reload: function (event) {

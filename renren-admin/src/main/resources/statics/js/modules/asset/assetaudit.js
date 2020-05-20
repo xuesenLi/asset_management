@@ -98,7 +98,7 @@ var vm = new Vue({
                 //资产变更 弹框
                 layer.open({
                     type: 2,
-                    title: "审批单号详情",
+                    title: "变更审批单号详情",
                     maxmin: true,
                     shadeClose: true,
                     shade: 0.5,
@@ -111,12 +111,25 @@ var vm = new Vue({
                 //资产调拨 弹框
                 layer.open({
                     type: 2,
-                    title: "审批单号详情",
+                    title: "调拨审批单号详情",
                     maxmin: true,
                     shadeClose: true,
                     shade: 0.5,
                     area: ['98vw', '98vh'],
                     content: 'transformer_transfer.html?recordNo=' + value
+                });
+            }
+
+            if(str === "BF"){
+                //资产报废 弹框
+                layer.open({
+                    type: 2,
+                    title: "报废审批单号详情",
+                    maxmin: true,
+                    shadeClose: true,
+                    shade: 0.5,
+                    area: ['98vw', '98vh'],
+                    content: 'transformer_scrap.html?recordNo=' + value
                 });
             }
 
