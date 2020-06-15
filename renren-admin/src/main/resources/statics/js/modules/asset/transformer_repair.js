@@ -1,7 +1,7 @@
 $(function () {
 
     var recordNo = T.p("recordNo");
-    //变更单号
+    //维修 单号
     vm.init(recordNo);
 
     $("#jqGrid").jqGrid({
@@ -70,15 +70,7 @@ var vm = new Vue({
     data:{
         showList: true,
         title: null,
-        assetChange:{
-            categoryName:null,
-            useOrgName:null,
-            orgName:null,
-            areaName: null,
-            empName: null,
-            recordRemarks: null,
-            recordStatus: null,
-        },
+        assetRepair:{},
         recordNo: null,
         //是否显示 操作、 驳回、 确定按钮
         isBtn: false
@@ -88,9 +80,9 @@ var vm = new Vue({
 
         init: function(recordNo){
             vm.recordNo = recordNo;
-            $.get(baseURL + "asset/assetchange/infoByRecordNo/"+ recordNo, function(r){
-                vm.assetChange = r.assetChange;
-                if(r.assetChange.recordStatus === 0){
+            $.get(baseURL + "asset/assetrepair/infoByRecordNo/"+ recordNo, function(r){
+                vm.assetRepair = r.assetRepair;
+                if(r.assetRepair.recordStatus === 0){
                     // 表示为待审批
                     vm.isBtn = true;
                 }
@@ -101,7 +93,7 @@ var vm = new Vue({
         save: function(){
             $.ajax({
                 type: "POST",
-                url: baseURL + "asset/assetchange/agree",
+                url: baseURL + "asset/assetrepair/agree",
                 data: "recordNo=" + vm.recordNo,
                 success: function(r){
                     if(r.code === 0){
@@ -121,7 +113,7 @@ var vm = new Vue({
         rebut: function(){
             $.ajax({
                 type: "POST",
-                url: baseURL + "asset/assetchange/rebut",
+                url: baseURL + "asset/assetrepair/rebut",
                 data: "recordNo=" + vm.recordNo,
                 success: function(r){
                     if(r.code === 0){

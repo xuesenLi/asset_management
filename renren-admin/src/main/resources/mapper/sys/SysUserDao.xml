@@ -24,4 +24,9 @@
 
 	</select>
 
+	<select id="selectByAll" resultType="io.renren.modules.asset.vo.UserVo">
+		select u.username, u.user_id from sys_user u
+
+	</select>
+
 </mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.asset.dao.AssetOperRecordDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.asset.entity.AssetOperRecordEntity" id="assetOperRecordMap">
+        <result property="id" column="id"/>
+        <result property="assetId" column="asset_id"/>
+        <result property="operType" column="oper_type"/>
+        <result property="operTime" column="oper_time"/>
+        <result property="createdUserid" column="created_userid"/>
+        <result property="createdUsername" column="created_username"/>
+        <result property="operContent" column="oper_content"/>
+        <result property="recordNo" column="record_no"/>
+    </resultMap>
+
+    <insert id="batchInsert" parameterType="list">
+        insert into asset_oper_record (asset_id, oper_type,
+        created_userid, created_username, oper_content, record_no)
+        values
+        <foreach collection="assetOperRecords" item="item" index="index" separator=",">
+            (
+                #{item.assetId},
+                #{item.operType},
+                #{item.createdUserid},
+                #{item.createdUsername},
+                #{item.operContent},
+                #{item.recordNo}
+            )
+        </foreach>
+
+    </insert>
+
+</mapper>

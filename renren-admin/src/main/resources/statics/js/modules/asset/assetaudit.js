@@ -133,12 +133,18 @@ var vm = new Vue({
                 });
             }
 
-
-
-
-
-
-
+            if(str === "WX"){
+                //资产维修 弹框
+                layer.open({
+                    type: 2,
+                    title: "维修审批单号详情",
+                    maxmin: true,
+                    shadeClose: true,
+                    shade: 0.5,
+                    area: ['98vw', '98vh'],
+                    content: 'transformer_repair.html?recordNo=' + value
+                });
+            }
 
         },
 

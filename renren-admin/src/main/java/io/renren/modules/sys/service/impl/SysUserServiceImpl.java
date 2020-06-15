@@ -115,4 +115,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 		 return baseMapper.findByDeptId(deptId);
     }
 
+    @Override
+    public List<UserVo> getByAll() {
+        return baseMapper.selectByAll();
+    }
+
 }

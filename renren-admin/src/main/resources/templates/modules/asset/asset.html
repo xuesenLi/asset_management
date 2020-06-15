@@ -14,9 +14,9 @@
 			<#if shiro.hasPermission("asset:asset:update")>
             <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
 			</#if>
-			<#if shiro.hasPermission("asset:asset:delete")>
-            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
-			</#if>
+
+            <a class="btn btn-primary" @click="WXfinish"><i class="fa fa-trash-o"></i>&nbsp;维修完成</a>
+
         </div>
         <table id="jqGrid"></table>
         <div id="jqGridPager"></div>

@@ -1,6 +1,6 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: baseURL + 'asset/assetscrap/list',
+        url: baseURL + 'asset/assetrepair/list',
         datatype: "json",
         colModel: [
             //0 待审批、1 已同意、2 被驳回、 3 --
@@ -14,18 +14,21 @@ $(function () {
                     else if(value === 3)
                         return '<span> -- </span>';
                 } },
-            { label: '报废单号', name: 'recordNo', index: 'record_no', width: 80,
+            { label: '维修单号', name: 'recordNo', index: 'record_no', width: 80,
                 formatter: function (value, options, row) {
                     return '<a style="cursor: pointer" onclick="vm.recordNoDetail(\'' + value + '\')">' + value + '</a>'
                 }
             },
 			{ label: 'id', hidden:true, name: 'id', index: 'id', width: 50, key: true },
 			{ label: '资产数量', name: 'assetNum', index: 'asset_num', width: 80 },
-			{ label: '报废日期', name: 'actualTime', index: 'actual_time', width: 80 },
-			{ label: '报废备注', name: 'recordRemarks', index: 'record_remarks', width: 80 },
+			{ label: '报修人', name: 'empName', index: 'emp_name', width: 80 },
+			{ label: '维修内容', name: 'repairContent', index: 'repair_content', width: 80 },
+			{ label: '维修费用(元)', name: 'repairCost', index: 'repair_cost', width: 80 },
+			{ label: '维修日期', name: 'actualTime', index: 'actual_time', width: 80 },
+			{ label: '维修备注', name: 'recordRemarks', index: 'record_remarks', width: 80 },
 			//{ label: '申请人id', name: 'createdUserid', index: 'created_userid', width: 80 },
-			{ label: '申请人名', name: 'createdUsername', index: 'created_username', width: 80 },
-			{ label: '申请日期', name: 'createdTime', index: 'created_time', width: 80 },
+			{ label: '申请人', name: 'createdUsername', index: 'created_username', width: 80 },
+			{ label: '申请日期', name: 'createdTime', index: 'created_time', width: 80 }
         ],
 		viewrecords: true,
         height: 385,
@@ -58,7 +61,7 @@ $(function () {
         , type: 'datetime'
         , range: false
         , done: function (value, date, endDate) {//控件选择完毕后的回调---点击日期、清空、现在、确定均会触发。
-            vm.assetScrap.actualTime = value;
+            vm.assetRepair.actualTime = value;
         }
     });
 
@@ -69,7 +72,7 @@ var vm = new Vue({
 	data:{
 		showList: true,
 		title: null,
-		assetScrap: {}
+		assetRepair: {}
 	},
 	methods: {
 
@@ -77,7 +80,7 @@ var vm = new Vue({
         recordNoDetail: function(value){
             layer.open({
                 type: 2,
-                title: "报废单号详情",
+                title: "维修单号详情",
                 maxmin: true,
                 shadeClose: true,
                 shade: 0.5,
@@ -86,15 +89,18 @@ var vm = new Vue({
             });
         },
 
-        /**  资产调拨 弹框  */
+        /**  资产维修 弹框  */
         updateOwner: function () {
+
+            //获取报修人 下拉框
+            vm.selectAllEmp();
 
             /**获取弹框表单数据 */
             vm.createOwnerTb();
 
             layer.open({
                 type: 1,
-                title: "资产报废",
+                title: "资产维修",
                 maxmin: true,
                 shadeClose: true,
                 shade: 0.5,
@@ -108,13 +114,13 @@ var vm = new Vue({
         },
 
         /** 获取弹框表单数据
-         * 资产报废 需要 获取 资产状态为 ： 闲置
+         * 资产报废 需要 获取 资产状态为 ： 闲置、在用、借用
          *
          * */
         createOwnerTb: function () {
 
             $("#ownerjqGrid").jqGrid({
-                url: baseURL + "asset/asset/listByTypeXZ",
+                url: baseURL + "asset/asset/listByTypeXZJ",
                 datatype: "json",
                 colModel: [
                     { label: '资产状态', name: 'assetStatus', index: 'asset_status', width: 80, formatter: function(value, options, row){
@@ -183,20 +189,43 @@ var vm = new Vue({
             return grid.getGridParam("selarrrow");
         },
 
+        selectAllEmp: function(){
+            //清空
+            $('#empNameSelect').empty();
+            //点击使用部门后， 加载该部门下方的人员。
+            $.get(baseURL + "sys/user/all", function(r){
+                if(r.code === 0){
+                    var userList = r.data;
+                    // $("#productNameSelect").append("<option value='-1'>--请选择--</option>");
+                    for (var i = 0; i < userList.length; i++) {
+                        $('#empNameSelect').append("<option value="+userList[i].userId+">"+userList[i].username+"</option>");
+                    }
+                }else{
+                    layer.alert(r.msg);
+                    $('#btnSave').button('reset');
+                    $('#btnSave').dequeue();
+                }
+
+            });
+        },
+
         save: function (event){
             var ids = vm.getSelectedRows1();
             if(ids == null){
                 return ;
             }
-            vm.assetScrap.assets = ids;
+            vm.assetRepair.assets = ids;
+            //下拉框 赋值
+            vm.assetRepair.empId = $("#empNameSelect option:selected").val();
+            vm.assetRepair.empName = $("#empNameSelect option:selected").text();
 
             $('#btnSave').button('loading').delay(1000).queue(function() {
-                var url = "asset/assetscrap/save";
+                var url = "asset/assetrepair/save";
                 $.ajax({
                     type: "POST",
                     url: baseURL + url,
                     contentType: "application/json",
-                    data: JSON.stringify(vm.assetScrap),
+                    data: JSON.stringify(vm.assetRepair),
                     success: function(r){
                         if(r.code === 0){
                             layer.msg("操作成功", {icon: 1});
@@ -216,13 +245,14 @@ var vm = new Vue({
         },
 
 
+
 		query: function () {
 			vm.reload();
 		},
 		add: function(){
 			vm.showList = false;
 			vm.title = "新增";
-			vm.assetScrap = {};
+			vm.assetRepair = {};
 		},
 		/*update: function (event) {
 			var id = getSelectedRow();
@@ -236,12 +266,12 @@ var vm = new Vue({
 		},
 		saveOrUpdate: function (event) {
 		    $('#btnSaveOrUpdate').button('loading').delay(1000).queue(function() {
-                var url = vm.assetScrap.id == null ? "asset/assetscrap/save" : "asset/assetscrap/update";
+                var url = vm.assetRepair.id == null ? "asset/assetrepair/save" : "asset/assetrepair/update";
                 $.ajax({
                     type: "POST",
                     url: baseURL + url,
                     contentType: "application/json",
-                    data: JSON.stringify(vm.assetScrap),
+                    data: JSON.stringify(vm.assetRepair),
                     success: function(r){
                         if(r.code === 0){
                              layer.msg("操作成功", {icon: 1});
@@ -270,7 +300,7 @@ var vm = new Vue({
                     lock = true;
 		            $.ajax({
                         type: "POST",
-                        url: baseURL + "asset/assetscrap/delete",
+                        url: baseURL + "asset/assetrepair/delete",
                         contentType: "application/json",
                         data: JSON.stringify(ids),
                         success: function(r){
@@ -287,8 +317,8 @@ var vm = new Vue({
              });
 		},*/
 		getInfo: function(id){
-			$.get(baseURL + "asset/assetscrap/info/"+id, function(r){
-                vm.assetScrap = r.assetScrap;
+			$.get(baseURL + "asset/assetrepair/info/"+id, function(r){
+                vm.assetRepair = r.assetRepair;
             });
 		},
 		reload: function (event) {

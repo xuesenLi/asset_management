@@ -1,7 +1,7 @@
 $(function () {
 
     var recordNo = T.p("recordNo");
-
+    //调拨 单号
     vm.init(recordNo);
 
     $("#jqGrid").jqGrid({

@@ -20,8 +20,11 @@ $(function () {
                     else
                         return '<span class="label label-warning">待审批</span>';
                 } },
-			//{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '资产编码', name: 'assetCode', index: 'asset_code', width: 80 },
+			{ label: 'id', name: 'id', hidden:true, index: 'id', width: 50, key: true },
+			{ label: '资产编码', name: 'assetCode', index: 'asset_code', width: 80,
+                formatter: function (value, options, row) {
+                    return '<a style="cursor: pointer" onclick="vm.recordNoDetail(\'' + row["id"] + '\')">' + value + '</a>'
+                }},
 			{ label: '资产名称', name: 'assetName', index: 'asset_name', width: 80 },
 			//{ label: '资产分类id', name: 'categoryId', index: 'category_id', width: 80 },
 			{ label: '资产分类名称', name: 'categoryName', index: 'category_name', width: 80 },
@@ -132,6 +135,42 @@ var vm = new Vue({
 		}
 	},
 	methods: {
+
+        /**点击单号 查看详情 */
+        recordNoDetail: function(value) {
+
+            console.log(value);
+
+            /*var str = value.substr(0, 2);
+            if (str === "BG") {
+                //资产变更 弹框
+                layer.open({
+                    type: 2,
+                    title: "变更审批单号详情",
+                    maxmin: true,
+                    shadeClose: true,
+                    shade: 0.5,
+                    area: ['98vw', '98vh'],
+                    content: 'transformer_audit.html?recordNo=' + value
+                });
+            }*/
+        },
+
+        WXfinish: function(){
+            var id = getSelectedRow();
+            if(id == null){
+                return ;
+            }
+            //    TODO   ``` 的资产不能进行资产 维修完成
+            // 通过设置一个 status_before字段 来 保存 上一次资产的状态。
+            // update ceshi
+            // set
+            // 		status = 2,
+            // 		status_before = status
+            //
+            // where id = 1
+        },
+
 		query: function () {
 			vm.reload();
 		},

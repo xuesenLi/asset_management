@@ -36,4 +36,11 @@ public interface SysUserDao extends BaseMapper<SysUserEntity> {
 
 	List<UserVo> findByDeptId(Long deptId);
 
+	/**
+	 * 查找所有用户
+	 * @return
+	 */
+    List<UserVo> selectByAll();
+
+
 }

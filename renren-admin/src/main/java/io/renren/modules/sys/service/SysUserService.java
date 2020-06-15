@@ -55,4 +55,11 @@ public interface SysUserService extends IService<SysUserEntity> {
 	 * @return
 	 */
     List<UserVo> getByDeptId(long deptId);
+
+	/**
+	 * 查找所有用户
+	 * @return
+	 */
+	List<UserVo> getByAll();
+
 }

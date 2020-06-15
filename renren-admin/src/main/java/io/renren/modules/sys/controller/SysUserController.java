@@ -54,6 +54,16 @@ public class SysUserController extends AbstractController {
 	}
 
 	/**
+	 * 查找系统所有用户
+	 * @return
+	 */
+	@RequestMapping("/all")
+	public R listByAll(){
+		List<UserVo> sysUserEntities = sysUserService.getByAll();
+		return R.ok().put("data", sysUserEntities);
+	}
+
+	/**
 	 * 所有用户列表
 	 */
 	@RequestMapping("/list")
