@@ -14,13 +14,13 @@ $(function () {
                     else if(value === 3)
                         return '<span> -- </span>';
                 } },
-            { label: '维修单号', name: 'recordNo', index: 'record_no', width: 80,
+            { label: '维修单号', name: 'recordNo', index: 'record_no', width: 120,
                 formatter: function (value, options, row) {
                     return '<a style="cursor: pointer" onclick="vm.recordNoDetail(\'' + value + '\')">' + value + '</a>'
                 }
             },
 			{ label: 'id', hidden:true, name: 'id', index: 'id', width: 50, key: true },
-			{ label: '资产数量', name: 'assetNum', index: 'asset_num', width: 80 },
+			{ label: '资产数量', name: 'assetNum', index: 'asset_num', width: 40 },
 			{ label: '报修人', name: 'empName', index: 'emp_name', width: 80 },
 			{ label: '维修内容', name: 'repairContent', index: 'repair_content', width: 80 },
 			{ label: '维修费用(元)', name: 'repairCost', index: 'repair_cost', width: 80 },
@@ -72,7 +72,10 @@ var vm = new Vue({
 	data:{
 		showList: true,
 		title: null,
-		assetRepair: {}
+		assetRepair: {
+            repairContent: null,
+            empId: null,
+        }
 	},
 	methods: {
 
@@ -218,6 +221,16 @@ var vm = new Vue({
             //下拉框 赋值
             vm.assetRepair.empId = $("#empNameSelect option:selected").val();
             vm.assetRepair.empName = $("#empNameSelect option:selected").text();
+
+            console.log(vm.assetRepair);
+            if(vm.assetRepair.empName === null || vm.assetRepair.empName === ''){
+                layer.alert("报修人不能为空!");
+                return false;
+            }
+            if(vm.assetRepair.repairContent === null || vm.assetRepair.repairContent === ''){
+                layer.alert("维修内容不能为空!");
+                return false;
+            }
 
             $('#btnSave').button('loading').delay(1000).queue(function() {
                 var url = "asset/assetrepair/save";

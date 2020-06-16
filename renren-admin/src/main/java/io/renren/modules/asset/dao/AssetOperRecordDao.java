@@ -24,4 +24,11 @@ public interface AssetOperRecordDao extends BaseMapper<AssetOperRecordEntity> {
     void batchInsert(@Param("assetOperRecords") List<AssetOperRecordEntity> assetOperRecords);
 
 
+    /**
+     * 通过资产id 查找记录中为wei'xiu
+     * @param assetId
+     * @return
+     */
+    String findRecordNoByAssetId(@Param("assetId") Integer assetId);
+
 }

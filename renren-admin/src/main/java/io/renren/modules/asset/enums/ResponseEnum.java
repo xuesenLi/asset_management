@@ -11,6 +11,8 @@ public enum ResponseEnum {
 
     SUCCESS(0, "成功"),
 
+    fail(-2, "错误"),
+
     ERROR(-1, "服务端错误"),
 
     PARAM_ERROR(3, "参数错误"),

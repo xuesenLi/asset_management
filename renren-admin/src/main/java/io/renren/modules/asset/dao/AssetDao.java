@@ -45,4 +45,24 @@ public interface AssetDao extends BaseMapper<AssetEntity> {
      */
     void batchAssetStatusReduce10(@Param("assets") List<Integer> assets);
 
+    /**
+     * 批量修改资产状态  并且保存当前状态
+     * @param assets
+     * @param status
+     */
+    void batchAssetStatusAndPreStatus(@Param("assets") List<Integer> assets, @Param("status") Integer status);
+
+    /**
+     * 批量修改资产状态为上一次保存的
+     * @param assets
+     */
+    void batchAssetStatusByPreStatus(@Param("assets") List<Integer> assets);
+
+    /**
+     * 修改资产状态为上一次保存的
+     * @param id
+     * @return
+     */
+    int updateAssetStatusByPreStatus(@Param("id") Integer id);
+
 }

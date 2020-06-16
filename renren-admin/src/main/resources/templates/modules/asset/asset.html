@@ -3,6 +3,20 @@
 <head>
     <title></title>
 		<#include "/header.html">
+    <style>
+        .col-sm-3 {
+            padding-top: 7px;
+            margin-bottom: 0;
+            text-align: right;
+        }
+        .row {
+            border-top: 0px;
+            margin: 0;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+    </style>
+
 </head>
 <body>
 <div id="rrapp" v-cloak>
@@ -163,6 +177,33 @@
             </div>
         </form>
     </div>
+
+
+<div id="WXfinishShow" style="display: none;">
+    <div>
+        <div class="row">
+            <label class="col-sm-3 control-labe">维修费用</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" v-model="wxfinish.repairCost" placeholder="请输入实际维修费用"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-3 control-label">维修说明</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" v-model="wxfinish.explain" placeholder="请输入维修说明"/>
+            </div>
+        </div>
+        <div class="row">
+            <div style="text-align: right; margin-right: 50px;">
+                <input type="button" class="btn btn-primary" id="btnSave" data-loading-text="保存中..." @click="wxSave"
+                       value="确定"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 </div>
 
 <!-- 选择分类 -->

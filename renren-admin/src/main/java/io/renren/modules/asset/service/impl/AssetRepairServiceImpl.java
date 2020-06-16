@@ -88,14 +88,15 @@ public class AssetRepairServiceImpl extends ServiceImpl<AssetRepairDao, AssetRep
         //单号详情 批量入库
         recordDetailDao.batchInsert(recordDetailEntitys);
 
-        //批量修改  将当前操作的资产状态改为  + 10 待审批
-        assetDao.batchAssetStatusAdd10(assetRepair.getAssets());
+        //批量修改  将当前操作的资产状态改为 待审批， 并且保存上一次状态。
+        //assetDao.batchAssetStatusAdd10(assetRepair.getAssets());
+        assetDao.batchAssetStatusAndPreStatus(assetRepair.getAssets(), AssetStatusEnum.PENDING_APPROVAL.getCode());
 
         //向审批表中 插入 待审批 的 记录
         AssetAuditEntity assetAuditEntity = new AssetAuditEntity();
         assetAuditEntity.setRecordNo(recordNo);
         assetAuditEntity.setRecordStatus(RecordStatusEnum.PENDING_APPROVAL.getCode());
-        assetAuditEntity.setRecordType(RecordTypeEnum.ASSET_SCRAP.getCode());
+        assetAuditEntity.setRecordType(RecordTypeEnum.ASSET_REPAIR.getCode());
         assetAuditEntity.setCreatedUsername(assetRepair.getCreatedUsername());
 
         assetAuditDao.insert(assetAuditEntity);
@@ -124,8 +125,9 @@ public class AssetRepairServiceImpl extends ServiceImpl<AssetRepairDao, AssetRep
             return R.error("当前资产不存在");
         }
 
-        //批量修改  将当前操作的资产状态  恢复为  原来的状态  -10
-        assetDao.batchAssetStatusReduce10(assetIds);
+        //批量修改  将当前操作的资产状态  恢复为  原来的状态asset_pre_status
+        //assetDao.batchAssetStatusReduce10(assetIds);
+        assetDao.batchAssetStatusByPreStatus(assetIds);
 
         //修改单号状态为 被驳回
         baseMapper.updateByRecordStatus(recordNo, RecordStatusEnum.BE_DISMISSED.getCode());
@@ -138,7 +140,7 @@ public class AssetRepairServiceImpl extends ServiceImpl<AssetRepairDao, AssetRep
 
     /**
      * 资产维修  同意
-     *   将资产状态 修改为 维修
+     *   将资产状态 修改为 维修中
      * @param recordNo
      * @return
      */

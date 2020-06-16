@@ -31,6 +31,7 @@
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
         <result property="assetStatus" column="asset_status"/>
+        <result property="assetPreStatus" column="asset_pre_status" />
     </resultMap>
 
     <update id="batchUpdateByIds" parameterType="list">
@@ -103,6 +104,39 @@
                 </foreach>
             </if>
         </where>
+    </update>
+
+    <update id="batchAssetStatusAndPreStatus" parameterType="list">
+        update asset
+        set asset_pre_status = asset_status,
+        asset_status = #{status}
+        <where>
+            id in
+            <if test="assets != null">
+                <foreach collection="assets" item="item" separator="," index="index" open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <update id="batchAssetStatusByPreStatus" parameterType="list">
+        update asset
+        set asset_status = asset_pre_status
+        <where>
+            id in
+            <if test="assets != null">
+                <foreach collection="assets" item="item" separator="," index="index" open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <update id="updateAssetStatusByPreStatus" parameterType="java.lang.Integer">
+        update asset
+        set asset_status = asset_pre_status
+        where id = #{id}
     </update>
 
 </mapper>

@@ -130,9 +130,15 @@ var vm = new Vue({
             useOrgName:null,
             orgId:null,
             orgName:null
+		},
 
+        //维修完成弹框字段
+		wxfinish:{
+		    id: null,  //资产id
+            repairCost: null,  //实际维修费用
+            explain: ''   //说明
+        },
 
-		}
 	},
 	methods: {
 
@@ -161,15 +167,61 @@ var vm = new Vue({
             if(id == null){
                 return ;
             }
+            //获取选中行数据
+            var rowData = $("#jqGrid").jqGrid("getRowData",id);
+            console.log(rowData);
+
+
+
+            // TODO
+            vm.wxfinish.id = id;
             //    TODO   ``` 的资产不能进行资产 维修完成
-            // 通过设置一个 status_before字段 来 保存 上一次资产的状态。
-            // update ceshi
-            // set
-            // 		status = 2,
-            // 		status_before = status
-            //
-            // where id = 1
+            layer.open({
+                type: 1,
+                title: "维修完成",
+                maxmin: true,
+                shadeClose: true,
+                shade: 0.5,
+                area: ['500px', '210px'],
+                content: $("#WXfinishShow"),
+                cancel:function(){
+                    $("#oQMobile").val('');
+                    $("#oQUserName").val('');
+                }
+            });
         },
+
+        /*维修提交按钮 */
+        wxSave: function(){
+            //刷新页面
+            //console.log(vm.wxfinish);
+            //window.location.reload();
+            layer.confirm('请确认是否提交?', {icon: 3, title:'提示'}, function(index){
+                $.ajax({
+                    type: "POST",
+                    url: baseURL + 'asset/assetoperrecord/insert/wxfinish',
+                    contentType: "application/json",
+                    data: JSON.stringify(vm.wxfinish),
+                    success: function(r){
+                        if(r.code === 0){
+                            layer.msg("操作成功", {icon: 1});
+                            //vm.reload();
+                            //$('#btnSaveOrUpdate').button('reset');
+                            //$('#btnSaveOrUpdate').dequeue();
+                            window.location.reload();
+                        }else{
+                            layer.alert(r.msg);
+                            $('#btnSaveOrUpdate').button('reset');
+                            $('#btnSaveOrUpdate').dequeue();
+                        }
+                    }
+                });
+                layer.close(index);
+            });
+
+
+        },
+
 
 		query: function () {
 			vm.reload();

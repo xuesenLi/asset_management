@@ -14,13 +14,13 @@ $(function () {
                     else if(value === 3)
                         return '<span> -- </span>';
                 } },
-            { label: '报废单号', name: 'recordNo', index: 'record_no', width: 80,
+            { label: '报废单号', name: 'recordNo', index: 'record_no', width: 120,
                 formatter: function (value, options, row) {
                     return '<a style="cursor: pointer" onclick="vm.recordNoDetail(\'' + value + '\')">' + value + '</a>'
                 }
             },
 			{ label: 'id', hidden:true, name: 'id', index: 'id', width: 50, key: true },
-			{ label: '资产数量', name: 'assetNum', index: 'asset_num', width: 80 },
+			{ label: '资产数量', name: 'assetNum', index: 'asset_num', width: 40 },
 			{ label: '报废日期', name: 'actualTime', index: 'actual_time', width: 80 },
 			{ label: '报废备注', name: 'recordRemarks', index: 'record_remarks', width: 80 },
 			//{ label: '申请人id', name: 'createdUserid', index: 'created_userid', width: 80 },

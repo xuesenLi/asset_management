@@ -32,4 +32,13 @@
 
     </insert>
 
+    <select id="findRecordNoByAssetId" parameterType="java.lang.Integer" resultType="java.lang.String">
+        select a.record_no from asset_oper_record a,
+        (select max(oper_time) time from asset_oper_record where asset_id = #{assetId} and oper_type = 6 ) b
+        where a.oper_time = b.time
+
+    </select>
+
+
+
 </mapper>

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
+ * 生成项目中 单号
  * @author Mr.Li
  * @date 2020/5/9 - 11:32
  */

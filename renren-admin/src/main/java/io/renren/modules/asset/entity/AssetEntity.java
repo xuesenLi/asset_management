@@ -128,4 +128,10 @@ public class AssetEntity implements Serializable {
 	 */
 	private Integer assetStatus;
 
+	/**
+	 * 记录上一次资产状态
+	 */
+	private Integer assetPreStatus;
+
+
 }
