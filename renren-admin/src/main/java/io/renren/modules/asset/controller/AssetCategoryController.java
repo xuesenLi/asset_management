@@ -46,16 +46,22 @@ public class AssetCategoryController extends AbstractController {
     @RequiresPermissions("asset:assetcategory:select")
     public R select(){
         List<AssetCategoryEntity> deptList = assetCategoryService.queryList(new HashMap<String, Object>());
+        AssetCategoryEntity root = new AssetCategoryEntity();
+        root.setCategoryId(0);
+        root.setName("一级分类");
+        root.setParentId(-1);
+        root.setOpen(true);
+        deptList.add(root);
 
         //添加一级部门
-        if(getUserId() == Constant.SUPER_ADMIN){
+        /*if(getUserId() == Constant.SUPER_ADMIN){
             AssetCategoryEntity root = new AssetCategoryEntity();
             root.setCategoryId(0);
             root.setName("一级分类");
             root.setParentId(-1);
             root.setOpen(true);
             deptList.add(root);
-        }
+        }*/
 
         return R.ok().put("categoryList", deptList);
     }
@@ -67,7 +73,20 @@ public class AssetCategoryController extends AbstractController {
     @RequiresPermissions("asset:assetcategory:list")
     public R info(){
         Integer categoryId = 0;
-        if(getUserId() != Constant.SUPER_ADMIN){
+        List<AssetCategoryEntity> categoryList = assetCategoryService.queryList(new HashMap<String, Object>());
+        Integer parentId = null;
+        for(AssetCategoryEntity assetCategoryEntity : categoryList){
+            if(parentId == null){
+                parentId = assetCategoryEntity.getParentId();
+                continue;
+            }
+
+            if(parentId > assetCategoryEntity.getParentId().longValue()){
+                parentId = assetCategoryEntity.getParentId();
+            }
+        }
+        categoryId = parentId;
+        /*if(getUserId() != Constant.SUPER_ADMIN){
             List<AssetCategoryEntity> categoryList = assetCategoryService.queryList(new HashMap<String, Object>());
             Integer parentId = null;
             for(AssetCategoryEntity assetCategoryEntity : categoryList){
@@ -81,7 +100,7 @@ public class AssetCategoryController extends AbstractController {
                 }
             }
             categoryId = parentId;
-        }
+        }*/
 
         return R.ok().put("categoryId", categoryId);
     }

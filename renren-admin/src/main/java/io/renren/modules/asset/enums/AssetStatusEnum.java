@@ -37,15 +37,4 @@ public enum AssetStatusEnum {
         this.des = des;
     }
 
-    /**
-     * 知产变更操作后 知产状态需要恢复 所以对资产状态code 进行+ 10  -10处理
-     */
-    public static Integer AssetStatusAdd10(AssetStatusEnum assetStatusEnum){
-        return assetStatusEnum.getCode() + 10;
-    }
-
-    public static Integer AssetStatusReduce10(AssetStatusEnum assetStatusEnum){
-        return assetStatusEnum.getCode() - 10;
-    }
-
 }

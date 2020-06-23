@@ -31,7 +31,6 @@ public class AssetCategoryServiceImpl extends ServiceImpl<AssetCategoryDao, Asse
     }
 
     @Override
-    @DataFilter(subDept = true, user = false, tableAlias = "t1")
     public List<AssetCategoryEntity> queryList(Map<String, Object> params) {
         return baseMapper.queryList(params);
     }

@@ -205,6 +205,13 @@ var vm = new Vue({
             //刷新页面
             //console.log(vm.wxfinish);
             //window.location.reload();
+
+            var exp = /^(([1-9]\d*)|\d)(\.\d{1,2})?$/;
+            if(!exp.test(vm.wxfinish.repairCost)){
+                layer.alert("请输入正确的金额格式");
+                return;
+            }
+
             layer.confirm('请确认是否提交?', {icon: 3, title:'提示'}, function(index){
                 $.ajax({
                     type: "POST",

@@ -7,7 +7,7 @@
         .head-left{
             height: 100px;
             float: left;
-            margin-right: 10px;
+            margin: 7px;
         }
         .head-right{
             float: left;
@@ -21,7 +21,9 @@
     <div class="head-left">
         <ul class="nav nav-pills nav-stacked">
             <li role="presentation" :class="{'active' : showList}" @click="showListBtn()"><a>处理记录</a></li>
+<!--
             <li role="presentation" :class="{'active' : !showList}" @click="unShowListBtn()"><a>盘点记录</a></li>
+-->
         </ul>
     </div>
     <div class="head-right">

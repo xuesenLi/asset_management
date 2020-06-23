@@ -15,9 +15,6 @@
     <select id="queryList" resultType="io.renren.modules.asset.entity.AssetCategoryEntity">
         select t1.*,(select t2.name from asset_category t2 where t2.category_id=t1.parent_id)parentName from asset_category t1 where
         t1.del_flag = 0
-        <if test="sql_filter != null">
-            and ${sql_filter}
-        </if>
     </select>
 
     <select id="queryCategoryIdList" resultType="Integer">
