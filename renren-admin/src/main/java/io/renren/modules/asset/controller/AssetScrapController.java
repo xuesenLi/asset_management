@@ -94,7 +94,7 @@ public class AssetScrapController extends AbstractController {
     @RequestMapping("/agree")
     public R agree(String recordNo){
         //
-        return assetScrapService.assetAgree(recordNo);
+        return assetScrapService.assetAgree(recordNo, getUser());
     }
 
 

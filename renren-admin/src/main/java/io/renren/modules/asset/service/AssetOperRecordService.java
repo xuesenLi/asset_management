@@ -26,5 +26,15 @@ public interface AssetOperRecordService extends IService<AssetOperRecordEntity> 
      * @return
      */
     ResponseVo insertWXFinish(WxFinishForm form, SysUserEntity user);
+
+
+    /**
+     * 通过资产id  获取列表
+     * @param params
+     * @param assetId
+     * @return
+     */
+    PageUtils queryPageByAssetId(Map<String, Object> params, String assetId);
+
 }
 

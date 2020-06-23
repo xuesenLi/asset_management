@@ -46,6 +46,17 @@ public class AssetOperRecordController extends AbstractController {
         return R.ok().put("page", page);
     }
 
+    /**
+     * 通过资产id  获取列表
+     */
+    @RequestMapping("/list/{assetId}")
+    public R listByTypeXZJ(@RequestParam Map<String, Object> params,
+                           @PathVariable("assetId") String assetId){
+        PageUtils page = assetOperRecordService.queryPageByAssetId(params, assetId);
+
+        return R.ok().put("page", page);
+    }
+
 
     /**
      * 信息

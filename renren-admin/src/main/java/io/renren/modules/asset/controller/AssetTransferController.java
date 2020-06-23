@@ -95,7 +95,7 @@ public class AssetTransferController extends AbstractController {
     @RequestMapping("/agree")
     public R agree(String recordNo){
         //
-        return assetTransferService.assetAgree(recordNo);
+        return assetTransferService.assetAgree(recordNo, getUser());
     }
 
     /**

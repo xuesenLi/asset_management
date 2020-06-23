@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.asset.entity.AssetScrapEntity;
+import io.renren.modules.sys.entity.SysUserEntity;
 
 import java.util.Map;
 
@@ -44,6 +45,6 @@ public interface AssetScrapService extends IService<AssetScrapEntity> {
      * @param recordNo
      * @return
      */
-    R assetAgree(String recordNo);
+    R assetAgree(String recordNo, SysUserEntity user);
 }
 

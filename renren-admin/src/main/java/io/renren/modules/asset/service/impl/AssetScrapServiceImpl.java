@@ -1,16 +1,14 @@
 package io.renren.modules.asset.service.impl;
 
 import io.renren.common.utils.R;
-import io.renren.modules.asset.dao.AssetAuditDao;
-import io.renren.modules.asset.dao.AssetDao;
-import io.renren.modules.asset.dao.RecordDetailDao;
-import io.renren.modules.asset.entity.AssetAuditEntity;
-import io.renren.modules.asset.entity.AssetEntity;
-import io.renren.modules.asset.entity.RecordDetailEntity;
+import io.renren.modules.asset.dao.*;
+import io.renren.modules.asset.entity.*;
+import io.renren.modules.asset.enums.AssetOperTypeEnum;
 import io.renren.modules.asset.enums.AssetStatusEnum;
 import io.renren.modules.asset.enums.RecordStatusEnum;
 import io.renren.modules.asset.enums.RecordTypeEnum;
 import io.renren.modules.asset.utils.GeneratorRecordNo;
+import io.renren.modules.sys.entity.SysUserEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +22,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
 
-import io.renren.modules.asset.dao.AssetScrapDao;
-import io.renren.modules.asset.entity.AssetScrapEntity;
 import io.renren.modules.asset.service.AssetScrapService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -46,6 +42,9 @@ public class AssetScrapServiceImpl extends ServiceImpl<AssetScrapDao, AssetScrap
 
     @Autowired
     private AssetAuditDao assetAuditDao;
+
+    @Autowired
+    private AssetOperRecordDao assetOperRecordDao;
 
 
     @Override
@@ -139,7 +138,7 @@ public class AssetScrapServiceImpl extends ServiceImpl<AssetScrapDao, AssetScrap
      * @return
      */
     @Override
-    public R assetAgree(String recordNo) {
+    public R assetAgree(String recordNo, SysUserEntity user) {
         //1. 通过单号查找详情
         List<Integer> assetIds = recordDetailDao.selectByRecordNo(recordNo);
         if(assetIds.size() == 0){
@@ -148,6 +147,23 @@ public class AssetScrapServiceImpl extends ServiceImpl<AssetScrapDao, AssetScrap
 
         //3. 批量修改  当前操作的资产状态为 报废
         assetDao.batchUpdateByIds(assetIds, AssetStatusEnum.SCRAP.getCode());
+
+        //资产操作记录 批量入库
+        List<AssetOperRecordEntity> assetOperRecordEntities = new ArrayList<>();
+        for (Integer assetId : assetIds) {
+            AssetOperRecordEntity assetOperRecordEntity = new AssetOperRecordEntity();
+            assetOperRecordEntity.setAssetId(assetId);
+            assetOperRecordEntity.setRecordNo(recordNo);
+            assetOperRecordEntity.setOperType(AssetOperTypeEnum.ASSET_SCRAP.getCode());
+            assetOperRecordEntity.setCreatedUserid(user.getUserId().intValue());
+            assetOperRecordEntity.setCreatedUsername(user.getUsername());
+            //报废 处理内容 ： 资产“已报废”
+            assetOperRecordEntity.setOperContent("资产'已报废'");
+
+            assetOperRecordEntities.add(assetOperRecordEntity);
+        }
+
+        assetOperRecordDao.batchInsert(assetOperRecordEntities);
 
 
         //4. 修改单号状态为 已同意

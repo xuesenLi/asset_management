@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <#include "/header.html">
+    <style>
+        .head-left{
+            height: 100px;
+            float: left;
+            margin-right: 10px;
+        }
+        .head-right{
+            float: left;
+            width: 90%;
+        }
+    </style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+
+    <div class="head-left">
+        <ul class="nav nav-pills nav-stacked">
+            <li role="presentation" :class="{'active' : showList}" @click="showListBtn()"><a>处理记录</a></li>
+            <li role="presentation" :class="{'active' : !showList}" @click="unShowListBtn()"><a>盘点记录</a></li>
+        </ul>
+    </div>
+    <div class="head-right">
+        <div v-show="showList">
+            <table id="jqGrid"></table>
+            <div id="jqGridPager"></div>
+        </div>
+<!--        <div v-show="!showList">
+            <table id="jqGrid_1"></table>
+            <div id="jqGridPager_1"></div>
+        </div>-->
+    </div>
+
+</div>
+<script src="${request.contextPath}/statics/js/modules/asset/transformer_oper_record.js?_${.now?long}"></script>
+</body>
+</html>

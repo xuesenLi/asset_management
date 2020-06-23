@@ -1,8 +1,18 @@
 package io.renren.modules.asset.service.impl;
 
+import io.renren.modules.asset.dao.AssetOperRecordDao;
 import io.renren.modules.asset.dao.RecordDetailDao;
+import io.renren.modules.asset.entity.AssetOperRecordEntity;
 import io.renren.modules.asset.entity.RecordDetailEntity;
+import io.renren.modules.asset.enums.AssetOperTypeEnum;
 import io.renren.modules.asset.enums.AssetStatusEnum;
+import io.renren.modules.asset.enums.RecordStatusEnum;
+import io.renren.modules.asset.enums.RecordTypeEnum;
+import io.renren.modules.asset.form.AssetForm;
+import io.renren.modules.asset.utils.GeneratorRecordNo;
+import io.renren.modules.asset.vo.ResponseVo;
+import io.renren.modules.sys.entity.SysUserEntity;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +29,8 @@ import io.renren.common.utils.Query;
 import io.renren.modules.asset.dao.AssetDao;
 import io.renren.modules.asset.entity.AssetEntity;
 import io.renren.modules.asset.service.AssetService;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 
 @Service("assetService")
@@ -26,6 +38,14 @@ public class AssetServiceImpl extends ServiceImpl<AssetDao, AssetEntity> impleme
 
     @Autowired
     private RecordDetailDao recordDetailDao;
+
+    @Autowired
+    private GeneratorRecordNo generatorRecordNo;
+
+    @Autowired
+    private AssetOperRecordDao assetOperRecordDao;
+
+
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -121,6 +141,64 @@ public class AssetServiceImpl extends ServiceImpl<AssetDao, AssetEntity> impleme
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    @Transactional
+    public ResponseVo batchInsertAsset(AssetForm form, SysUserEntity user) {
+
+        List<AssetEntity> assetEntities = new ArrayList<>();
+        for(int i = 0; i < form.getAssetNumber(); i++){
+            AssetEntity assetEntity = new AssetEntity();
+            BeanUtils.copyProperties(form, assetEntity);
+            assetEntity.setAdminUserid(user.getUserId().intValue());
+            assetEntity.setAdminUsername(user.getUsername());
+            assetEntity.setAssetCode(generatorRecordNo.generateAssetNO(RecordTypeEnum.ASSET_NO));
+            if(StringUtils.isEmpty(assetEntity.getUseOrgName())){
+                //无新增使用组织， 入库为闲置
+                assetEntity.setAssetStatus(AssetStatusEnum.IDLE.getCode());
+            }else{
+                //否则 在用
+                assetEntity.setAssetStatus(AssetStatusEnum.IN_USE.getCode());
+            }
+            assetEntities.add(assetEntity);
+        }
+
+        //批量插入资产信息
+        int count = baseMapper.batchInsertAsset(assetEntities);
+
+        List<Integer> assetIds = assetEntities.stream()
+                .map(AssetEntity::getId)
+                .collect(Collectors.toList());
+
+        //批量插入资产操作记录
+        //资产操作记录 批量入库
+        List<AssetOperRecordEntity> assetOperRecordEntities = new ArrayList<>();
+        for (Integer assetId : assetIds) {
+            AssetOperRecordEntity assetOperRecordEntity = new AssetOperRecordEntity();
+            assetOperRecordEntity.setAssetId(assetId);
+            //assetOperRecordEntity.setRecordNo(recordNo);
+            assetOperRecordEntity.setOperType(AssetOperTypeEnum.IN_STORAGE.getCode());
+            assetOperRecordEntity.setCreatedUserid(user.getUserId().intValue());
+            assetOperRecordEntity.setCreatedUsername(user.getUsername());
+            //报废 处理内容 ： 资产“已报废”
+            assetOperRecordEntity.setOperContent("资产'入库'");
+
+            assetOperRecordEntities.add(assetOperRecordEntity);
+        }
+
+        assetOperRecordDao.batchInsert(assetOperRecordEntities);
+
+        return ResponseVo.success();
+    }
+
+    @Override
+    public ResponseVo updateByOtherInfo(AssetEntity asset) {
+        int i = baseMapper.updateByOtherInfo(asset);
+        if(i < 1){
+            return ResponseVo.success("修改失败");
+        }
+        return ResponseVo.success();
     }
 
 }

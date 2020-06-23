@@ -11,7 +11,7 @@ $(function () {
             recordNo: recordNo === null ? "" : recordNo
         },
         colModel: [
-            { label: '资产状态', name: 'assetStatus', index: 'asset_status', width: 80, formatter: function(value, options, row){
+            { label: '资产状态', name: 'assetStatus', index: 'asset_status', width: 60, formatter: function(value, options, row){
                     if(value === 0)
                         return '<span class="label label-info">闲置</span>';
                     else if(value === 1)
@@ -22,12 +22,12 @@ $(function () {
                         return '<span class="label label-danger">维修中</span>';
                     else if(value === 4)
                         return '<span class="label label-default">报废</span>';
-                    else
+                    else if(value === 5)
                         return '<span class="label label-warning">待审批</span>';
 
                 } },
             { label: 'id', name: 'id', index: 'id', width: 50, key: true, hidden: true },
-            { label: '资产编码', name: 'assetCode', index: 'asset_code', width: 80 },
+            { label: '资产编码', name: 'assetCode', index: 'asset_code', width: 100 },
             { label: '资产名称', name: 'assetName', index: 'asset_name', width: 80 },
             { label: '资产分类名称', name: 'categoryName', index: 'category_name', width: 80 },
             { label: '所属组织名称', name: 'orgName', index: 'org_name', width: 80 },

@@ -3,7 +3,7 @@ $(function () {
         url: baseURL + 'asset/assetreturned/list',
         datatype: "json",
         colModel: [
-            { label: '单据状态', name: 'recordStatus', index: 'record_status', width: 80, formatter:function (value, options, row) {
+            { label: '单据状态', name: 'recordStatus', index: 'record_status', width: 60, formatter:function (value, options, row) {
                     if(value === 0)
                         return '<span class="label label-warning">待审批</span>';
                     else if(value === 1)
@@ -13,7 +13,7 @@ $(function () {
                     else if(value === 3)
                         return '<span> -- </span>';
                 } },
-            { label: '归还单号', name: 'recordNo', index: 'record_no', width: 80,
+            { label: '归还单号', name: 'recordNo', index: 'record_no', width: 100,
                 formatter: function (value, options, row) {
                     return '<a style="cursor: pointer" onclick="vm.recordNoDetail(\'' + value + '\')">' + value + '</a>'
                 }

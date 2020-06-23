@@ -5,6 +5,7 @@ import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.asset.entity.AssetChangeEntity;
 import io.renren.modules.asset.vo.AssetChangeVo;
+import io.renren.modules.sys.entity.SysUserEntity;
 
 import java.util.Map;
 
@@ -42,8 +43,9 @@ public interface AssetChangeService extends IService<AssetChangeEntity> {
     /**
      * 同意
      * @param recordNo
+     * @param user
      * @return
      */
-    R assetAgree(String recordNo);
+    R assetAgree(String recordNo, SysUserEntity user);
 }
 

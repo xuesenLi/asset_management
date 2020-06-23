@@ -4,7 +4,7 @@ $(function () {
         datatype: "json",
         colModel: [
             //0 待审批、1 已同意、2 被驳回、 3 --
-            { label: '单据状态', name: 'recordStatus', index: 'record_status', width: 80, formatter:function (value, options, row) {
+            { label: '单据状态', name: 'recordStatus', index: 'record_status', width: 60, formatter:function (value, options, row) {
                     if(value === 0)
                         return '<span class="label label-warning">待审批</span>';
                     else if(value === 1)
@@ -15,7 +15,7 @@ $(function () {
                         return '<span> -- </span>';
                 } },
             /*{ label: 'id', name: 'id', index: 'id', width: 50, key: true },*/
-            { label: '变更单号', name: 'recordNo', index: 'record_no', width: 80,
+            { label: '变更单号', name: 'recordNo', index: 'record_no', width: 100,
                 formatter: function (value, options, row) {
                     return '<a style="cursor: pointer" onclick="vm.recordNoDetail(\'' + value + '\')">' + value + '</a>'
                 }

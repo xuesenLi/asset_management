@@ -2,7 +2,9 @@ package io.renren.modules.asset.form;
 
 import lombok.Data;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -14,9 +16,7 @@ import java.util.Date;
 public class AssetForm {
     /**
      * 资产编码
-     */
-    @NotBlank(message = "资产编码不能为空")
-    private String assetCode;
+    private String assetCode;*/
     /**
      * 资产名称
      */
@@ -59,11 +59,11 @@ public class AssetForm {
     /**
      * 管理员id
      */
-    private Integer adminUserid;
+    //private Integer adminUserid;
     /**
      * 管理员名称
      */
-    private String adminUsername;
+    //private String adminUsername;
     /**
      * 区域id
      */
@@ -106,15 +106,10 @@ public class AssetForm {
      */
     private String remarks;
     /**
-     * 创建时间
+     * 新增数量
      */
-    private Date createTime;
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-    /**
-     * 0闲置、1在用、2借用、3维修中、4报废、5待审批。
-     */
-    private Integer assetStatus;
+    @NotNull(message = "新增数量不能为空")
+    @Min(value = 0, message = "新增数量不能小于0")
+    private Integer assetNumber;
+
 }

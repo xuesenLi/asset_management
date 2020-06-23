@@ -139,4 +139,131 @@
         where id = #{id}
     </update>
 
+    <select id="batchFindAssetUseInfo" parameterType="list" resultType="io.renren.modules.asset.vo.AssetUseInfoVo">
+        select id, asset_name, category_name, org_name, emp_name, use_org_name, area_name
+        from asset
+        <where>
+            id in
+            <foreach collection="assets" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+
+    </select>
+
+
+    <update id="batchUpdateAssetInfoById">
+        update asset
+        <set>
+            <if test="assetEntity.assetName != null">
+                asset_name = #{assetEntity.assetName},
+            </if>
+            <if test="assetEntity.categoryName != null">
+                category_id = #{assetEntity.categoryId},
+                category_name = #{assetEntity.categoryName},
+            </if>
+            <if test="assetEntity.orgName != null">
+                org_id = #{assetEntity.orgId},
+                org_name = #{assetEntity.orgName},
+            </if>
+            <if test="assetEntity.useOrgName != null">
+                use_org_id = #{assetEntity.useOrgId},
+                use_org_name = #{assetEntity.useOrgName},
+            </if>
+            <if test="assetEntity.empName != null">
+                emp_id = #{assetEntity.empId},
+                emp_name = #{assetEntity.empName},
+            </if>
+            <if test="assetEntity.areaName != null">
+                area_id = #{assetEntity.areaId},
+                area_name = #{assetEntity.areaName},
+            </if>
+        </set>
+
+        <where>
+            id in
+            <if test="assetIds != null">
+                <foreach collection="assetIds" item="item" separator="," index="index" open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <update id="batchAssetStatusByUseCase" parameterType="list">
+        update asset
+        set asset_status = case when asset_pre_status = 0  then 1 else asset_pre_status end
+        <where>
+            id in
+            <if test="assets != null">
+                <foreach collection="assets" item="item" separator="," index="index" open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <insert id="batchInsertAsset" parameterType="list" useGeneratedKeys="true" keyProperty="id">
+
+        insert into asset (asset_code, asset_name,
+        category_id, category_name, org_id, org_name,
+        use_org_id, use_org_name, emp_id, emp_name,
+        admin_userid, admin_username, area_id, area_name,
+        storage_position, standard, unit, worth,
+        time_limit, buy_time, supplier, remarks,
+        asset_status
+        )
+        values
+        <foreach collection="assets" item="item" index="index" separator=",">
+            (
+            #{item.assetCode},#{item.assetName},
+            #{item.categoryId},#{item.categoryName},
+            #{item.orgId},#{item.orgName},
+            #{item.useOrgId},#{item.useOrgName},
+            #{item.empId},#{item.empName},
+            #{item.adminUserid},#{item.adminUsername},
+            #{item.areaId},#{item.areaName},
+            #{item.storagePosition},#{item.standard},
+            #{item.unit},#{item.worth},
+            #{item.timeLimit},#{item.buyTime},
+            #{item.supplier},#{item.remarks},
+            #{item.assetStatus}
+            )
+        </foreach>
+
+    </insert>
+
+    <update id="updateByOtherInfo" parameterType="io.renren.modules.asset.entity.AssetEntity">
+        update asset
+        <set>
+            <if test="storagePosition != null">
+                storage_position = #{storagePosition,jdbcType=VARCHAR},
+            </if>
+            <if test="standard != null">
+                standard = #{standard,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="worth != null">
+                worth = #{worth,jdbcType=DECIMAL},
+            </if>
+            <if test="timeLimit != null">
+                time_limit = #{timeLimit,jdbcType=INTEGER},
+            </if>
+            <if test="buyTime != null">
+                buy_time = #{buyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="supplier != null">
+                supplier = #{supplier,jdbcType=VARCHAR},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+
+    </update>
+
+
 </mapper>

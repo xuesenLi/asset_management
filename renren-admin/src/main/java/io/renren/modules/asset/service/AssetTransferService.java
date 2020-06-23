@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 import io.renren.modules.asset.entity.AssetTransferEntity;
+import io.renren.modules.sys.entity.SysUserEntity;
 
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public interface AssetTransferService extends IService<AssetTransferEntity> {
 
     R assetRebut(String recordNo);
 
-    R assetAgree(String recordNo);
+    R assetAgree(String recordNo, SysUserEntity user);
 
 
     /**

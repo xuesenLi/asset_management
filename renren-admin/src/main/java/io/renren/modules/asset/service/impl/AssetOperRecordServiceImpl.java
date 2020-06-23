@@ -70,4 +70,17 @@ public class AssetOperRecordServiceImpl extends ServiceImpl<AssetOperRecordDao, 
         return ResponseVo.success();
 
     }
+
+    @Override
+    public PageUtils queryPageByAssetId(Map<String, Object> params, String assetId) {
+
+        IPage<AssetOperRecordEntity> page = this.page(
+                new Query<AssetOperRecordEntity>().getPage(params),
+                new QueryWrapper<AssetOperRecordEntity>()
+                        .eq("asset_id", Integer.valueOf(assetId))
+                        .orderByDesc("oper_time")
+        );
+
+        return new PageUtils(page);
+    }
 }

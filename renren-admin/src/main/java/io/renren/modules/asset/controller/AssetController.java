@@ -37,7 +37,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("asset/asset")
 @Slf4j
-public class AssetController {
+public class AssetController extends AbstractController {
     @Autowired
     private AssetService assetService;
 
@@ -129,11 +129,7 @@ public class AssetController {
             return ResponseVo.error(ResponseEnum.PARAM_ERROR, bindingResult);
         }
 
-        AssetEntity assetEntity = new AssetEntity();
-        BeanUtils.copyProperties(form, assetEntity);
-        assetService.save(assetEntity);
-
-        return ResponseVo.success();
+        return assetService.batchInsertAsset(form, getUser());
     }
 
     /**
@@ -141,11 +137,10 @@ public class AssetController {
      */
     @RequestMapping("/update")
     @RequiresPermissions("asset:asset:update")
-    public R update(@RequestBody AssetEntity asset){
-        ValidatorUtils.validateEntity(asset);
-        assetService.updateById(asset);
-
-        return R.ok();
+    public ResponseVo update(@RequestBody AssetEntity asset){
+        //assetService.updateById(asset);
+        //修改其他信息。
+        return assetService.updateByOtherInfo(asset);
     }
 
     /**

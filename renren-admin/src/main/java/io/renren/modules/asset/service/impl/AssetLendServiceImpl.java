@@ -1,8 +1,11 @@
 package io.renren.modules.asset.service.impl;
 
 import io.renren.modules.asset.dao.AssetDao;
+import io.renren.modules.asset.dao.AssetOperRecordDao;
 import io.renren.modules.asset.dao.RecordDetailDao;
+import io.renren.modules.asset.entity.AssetOperRecordEntity;
 import io.renren.modules.asset.entity.RecordDetailEntity;
+import io.renren.modules.asset.enums.AssetOperTypeEnum;
 import io.renren.modules.asset.enums.AssetStatusEnum;
 import io.renren.modules.asset.enums.RecordStatusEnum;
 import io.renren.modules.asset.enums.RecordTypeEnum;
@@ -40,6 +43,10 @@ public class AssetLendServiceImpl extends ServiceImpl<AssetLendDao, AssetLendEnt
     @Autowired
     private AssetDao assetDao;
 
+    @Autowired
+    private AssetOperRecordDao assetOperRecordDao;
+
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AssetLendEntity> page = this.page(
@@ -74,6 +81,24 @@ public class AssetLendServiceImpl extends ServiceImpl<AssetLendDao, AssetLendEnt
 
         //单号详情 批量入库
         recordDetailDao.batchInsert(recordDetailEntitys);
+
+        //资产操作记录 批量入库
+        List<AssetOperRecordEntity> assetOperRecordEntities = new ArrayList<>();
+        for (Integer assetId : assetLend.getAssets()) {
+            AssetOperRecordEntity assetOperRecordEntity = new AssetOperRecordEntity();
+            assetOperRecordEntity.setAssetId(assetId);
+            assetOperRecordEntity.setRecordNo(recordNo);
+            assetOperRecordEntity.setOperType(AssetOperTypeEnum.ASSET_LEND.getCode());
+            assetOperRecordEntity.setCreatedUserid(assetLend.getCreatedUserid());
+            assetOperRecordEntity.setCreatedUsername(assetLend.getCreatedUsername());
+            //借用 处理内容 ： == 使用组织由 ‘ ’ 变更成 。。。” ，使用人由‘ ’ 变更成 “。。。i”
+            assetOperRecordEntity.setOperContent("使用组织由 ' ' 变更成 '"+assetLend.getUseOrgName() + "', 使用人由 ' ' 变更成 '"+ assetLend.getEmpName()+ "'");
+
+            assetOperRecordEntities.add(assetOperRecordEntity);
+        }
+
+        assetOperRecordDao.batchInsert(assetOperRecordEntities);
+
 
         //批量修改  当前操作的资产状态为 借用
         AssetUsedVo assetUsedVo = new AssetUsedVo();

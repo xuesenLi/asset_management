@@ -6,7 +6,7 @@ $(function () {
         datatype: "json",
         colModel: [
 
-            { label: '资产状态', name: 'assetStatus', index: 'asset_status', width: 80, formatter: function(value, options, row){
+            { label: '资产状态', name: 'assetStatus', index: 'asset_status', width: 60, formatter: function(value, options, row){
                     if(value === 0)
                         return '<span class="label label-info">闲置</span>';
                     else if(value === 1)
@@ -17,11 +17,11 @@ $(function () {
                         return '<span class="label label-danger">维修中</span>';
                     else if(value === 4)
                         return '<span class="label label-default">报废</span>';
-                    else
+                    else if(value === 5)
                         return '<span class="label label-warning">待审批</span>';
                 } },
 			{ label: 'id', name: 'id', hidden:true, index: 'id', width: 50, key: true },
-			{ label: '资产编码', name: 'assetCode', index: 'asset_code', width: 80,
+			{ label: '资产编码', name: 'assetCode', index: 'asset_code', width: 100,
                 formatter: function (value, options, row) {
                     return '<a style="cursor: pointer" onclick="vm.recordNoDetail(\'' + row["id"] + '\')">' + value + '</a>'
                 }},
@@ -84,6 +84,14 @@ $(function () {
             vm.asset.buyTime = value;
         }
     });
+    laydate.render({
+        elem: '#checkDateBefore1'
+        , type: 'datetime'
+        , range: false
+        , done: function (value, date, endDate) {//控件选择完毕后的回调---点击日期、清空、现在、确定均会触发。
+            vm.asset.buyTime = value;
+        }
+    });
 });
 
 /*标识分类树*/
@@ -122,6 +130,9 @@ var vm = new Vue({
 	el:'#rrapp',
 	data:{
 		showList: true,
+
+        //显示update页面
+        showUpdate: false,
 		title: null,
 		asset: {
 		    categoryId:null,
@@ -129,7 +140,8 @@ var vm = new Vue({
             useOrgId:null,
             useOrgName:null,
             orgId:null,
-            orgName:null
+            orgName:null,
+            assetNumber:null, //资产数量
 		},
 
         //维修完成弹框字段
@@ -147,19 +159,15 @@ var vm = new Vue({
 
             console.log(value);
 
-            /*var str = value.substr(0, 2);
-            if (str === "BG") {
-                //资产变更 弹框
-                layer.open({
-                    type: 2,
-                    title: "变更审批单号详情",
-                    maxmin: true,
-                    shadeClose: true,
-                    shade: 0.5,
-                    area: ['98vw', '98vh'],
-                    content: 'transformer_audit.html?recordNo=' + value
-                });
-            }*/
+            layer.open({
+                type: 2,
+                title: "资产详情记录",
+                maxmin: true,
+                shadeClose: true,
+                shade: 0.5,
+                area: ['98vw', '98vh'],
+                content: 'transformer_oper_record.html?assetId=' + value
+            });
         },
 
         WXfinish: function(){
@@ -167,11 +175,12 @@ var vm = new Vue({
             if(id == null){
                 return ;
             }
-            //获取选中行数据
+            //获取选中行数据 查看是否为 维修中资产
             var rowData = $("#jqGrid").jqGrid("getRowData",id);
-            console.log(rowData);
-
-
+            if(rowData.assetStatus.indexOf("维修中") === -1){
+                layer.alert("请选择维修中的资产进行维修完成操作!");
+                return ;
+            }
 
             // TODO
             vm.wxfinish.id = id;
@@ -205,9 +214,6 @@ var vm = new Vue({
                     success: function(r){
                         if(r.code === 0){
                             layer.msg("操作成功", {icon: 1});
-                            //vm.reload();
-                            //$('#btnSaveOrUpdate').button('reset');
-                            //$('#btnSaveOrUpdate').dequeue();
                             window.location.reload();
                         }else{
                             layer.alert(r.msg);
@@ -249,6 +255,8 @@ var vm = new Vue({
                 return ;
             }
             vm.showList = false;
+            vm.showUpdate = true;
+
             vm.title = "修改";
 
             //加载分类树
@@ -336,6 +344,31 @@ var vm = new Vue({
                 });
 			});
 		},
+
+        //修改
+        updateAsset: function (event) {
+            $('#btnSaveOrUpdate').button('loading').delay(1000).queue(function() {
+                $.ajax({
+                    type: "POST",
+                    url: baseURL + 'asset/asset/update',
+                    contentType: "application/json",
+                    data: JSON.stringify(vm.asset),
+                    success: function(r){
+                        if(r.code === 0){
+                            layer.msg("操作成功", {icon: 1});
+                            vm.reload();
+                            $('#btnUpdateAsset').button('reset');
+                            $('#btnUpdateAsset').dequeue();
+                        }else{
+                            layer.alert(r.msg);
+                            $('#btnUpdateAsset').button('reset');
+                            $('#btnUpdateAsset').dequeue();
+                        }
+                    }
+                });
+            });
+        },
+
 		del: function (event) {
 			var ids = getSelectedRows();
 			if(ids == null){
@@ -458,6 +491,7 @@ var vm = new Vue({
 
 		reload: function (event) {
 			vm.showList = true;
+            vm.showUpdate = false;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{
                 page:page

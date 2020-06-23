@@ -1,12 +1,16 @@
 package io.renren.modules.asset.service.impl;
 
 import io.renren.modules.asset.dao.AssetDao;
+import io.renren.modules.asset.dao.AssetOperRecordDao;
 import io.renren.modules.asset.dao.RecordDetailDao;
+import io.renren.modules.asset.entity.AssetOperRecordEntity;
 import io.renren.modules.asset.entity.RecordDetailEntity;
+import io.renren.modules.asset.enums.AssetOperTypeEnum;
 import io.renren.modules.asset.enums.AssetStatusEnum;
 import io.renren.modules.asset.enums.RecordStatusEnum;
 import io.renren.modules.asset.enums.RecordTypeEnum;
 import io.renren.modules.asset.utils.GeneratorRecordNo;
+import io.renren.modules.asset.vo.AssetUseInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,6 +43,10 @@ public class AssetReturnedServiceImpl extends ServiceImpl<AssetReturnedDao, Asse
 
     @Autowired
     private AssetDao assetDao;
+
+    @Autowired
+    private AssetOperRecordDao assetOperRecordDao;
+
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -71,6 +81,30 @@ public class AssetReturnedServiceImpl extends ServiceImpl<AssetReturnedDao, Asse
 
         //单号详情 批量入库
         recordDetailDao.batchInsert(recordDetailEntitys);
+
+        //通过assetId 批量查找当前使用组织、使用人 。  AssetUseInfoVo
+        List<AssetUseInfoVo> assetUseInfoVos = assetDao.batchFindAssetUseInfo(assetReturned.getAssets());
+        Map<Integer, AssetUseInfoVo> useMap = assetUseInfoVos.stream()
+                .collect(Collectors.toMap(AssetUseInfoVo::getId, assetUseInfoVo -> assetUseInfoVo));
+
+        //资产操作记录 批量入库
+        List<AssetOperRecordEntity> assetOperRecordEntities = new ArrayList<>();
+        for (Integer assetId : assetReturned.getAssets()) {
+            AssetOperRecordEntity assetOperRecordEntity = new AssetOperRecordEntity();
+            assetOperRecordEntity.setAssetId(assetId);
+            assetOperRecordEntity.setRecordNo(recordNo);
+            assetOperRecordEntity.setOperType(AssetOperTypeEnum.ASSET_RETURNED.getCode());
+            assetOperRecordEntity.setCreatedUserid(assetReturned.getCreatedUserid());
+            assetOperRecordEntity.setCreatedUsername(assetReturned.getCreatedUsername());
+            //退还 处理内容 ： == 使用组织由 “ 。。。” 变更成  ‘ ’  ，使用人由 “。。” 变更成 ‘’ “”
+            assetOperRecordEntity.setOperContent("使用组织由 '" + useMap.get(assetId).getUseOrgName()
+                    + " ' 变更成 ' ', 使用人由 '" + useMap.get(assetId).getEmpName() +" ' 变更成 ' '");
+
+            assetOperRecordEntities.add(assetOperRecordEntity);
+        }
+
+        assetOperRecordDao.batchInsert(assetOperRecordEntities);
+
 
         //批量修改  当前操作的资产状态为 闲置
         assetDao.batchUpdateByIds(assetReturned.getAssets(), AssetStatusEnum.IDLE.getCode());

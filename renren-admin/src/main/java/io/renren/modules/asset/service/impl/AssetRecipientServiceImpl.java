@@ -1,9 +1,9 @@
 package io.renren.modules.asset.service.impl;
 
-import io.renren.modules.asset.dao.AssetDao;
-import io.renren.modules.asset.dao.RecordDetailDao;
-import io.renren.modules.asset.dao.SequenceMapper;
+import io.renren.modules.asset.dao.*;
+import io.renren.modules.asset.entity.AssetOperRecordEntity;
 import io.renren.modules.asset.entity.RecordDetailEntity;
+import io.renren.modules.asset.enums.AssetOperTypeEnum;
 import io.renren.modules.asset.enums.AssetStatusEnum;
 import io.renren.modules.asset.enums.RecordStatusEnum;
 import io.renren.modules.asset.enums.RecordTypeEnum;
@@ -22,7 +22,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
 
-import io.renren.modules.asset.dao.AssetRecipientDao;
 import io.renren.modules.asset.entity.AssetRecipientEntity;
 import io.renren.modules.asset.service.AssetRecipientService;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +41,9 @@ public class AssetRecipientServiceImpl extends ServiceImpl<AssetRecipientDao, As
 
     @Autowired
     private AssetRecipientDao assetRecipientDao;
+
+    @Autowired
+    private AssetOperRecordDao assetOperRecordDao;
 
 
     @Override
@@ -77,6 +79,23 @@ public class AssetRecipientServiceImpl extends ServiceImpl<AssetRecipientDao, As
 
         //单号详情 批量入库
         recordDetailDao.batchInsert(recordDetailEntitys);
+
+        //资产操作记录 批量入库
+        List<AssetOperRecordEntity> assetOperRecordEntities = new ArrayList<>();
+        for (Integer assetId : assetRecipient.getAssets()) {
+            AssetOperRecordEntity assetOperRecordEntity = new AssetOperRecordEntity();
+            assetOperRecordEntity.setAssetId(assetId);
+            assetOperRecordEntity.setRecordNo(recordNo);
+            assetOperRecordEntity.setOperType(AssetOperTypeEnum.ASSET_RECIPIENT.getCode());
+            assetOperRecordEntity.setCreatedUserid(assetRecipient.getCreatedUserid());
+            assetOperRecordEntity.setCreatedUsername(assetRecipient.getCreatedUsername());
+            //领用 处理内容 ： == 使用组织由 ‘ ’ 变更成 。。。” ，使用人由‘ ’ 变更成 “。。。i”
+            assetOperRecordEntity.setOperContent("使用组织由 ' ' 变更成 '"+assetRecipient.getUseOrgName() + "', 使用人由 ' ' 变更成 '"+ assetRecipient.getEmpName()+ "'");
+
+            assetOperRecordEntities.add(assetOperRecordEntity);
+        }
+
+        assetOperRecordDao.batchInsert(assetOperRecordEntities);
 
         //批量修改  当前操作的资产状态为 在用
         AssetUsedVo assetUsedVo = new AssetUsedVo();

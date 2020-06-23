@@ -26,6 +26,8 @@ public enum RecordTypeEnum {
 
     ASSET_SCRAP(7, "报废", "BF"),
 
+    ASSET_NO(8, "资产编号", "ZC"),
+
 
     ;
 

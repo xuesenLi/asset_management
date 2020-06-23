@@ -3,7 +3,9 @@ package io.renren.modules.asset.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.asset.entity.AssetEntity;
+import io.renren.modules.asset.form.AssetForm;
 import io.renren.modules.asset.vo.ResponseVo;
+import io.renren.modules.sys.entity.SysUserEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -49,5 +51,18 @@ public interface AssetService extends IService<AssetEntity> {
 
     PageUtils queryPageByIn(Map<String, Object> params, String recordNo);
 
+    /**
+     *  批量 新增 资产
+     * @param form
+     * @return
+     */
+    ResponseVo batchInsertAsset(AssetForm form, SysUserEntity user);
+
+    /**
+     * 修改其他信息。
+     * @param asset
+     * @return
+     */
+    ResponseVo updateByOtherInfo(AssetEntity asset);
 }
 

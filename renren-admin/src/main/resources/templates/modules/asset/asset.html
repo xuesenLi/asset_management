@@ -36,147 +36,224 @@
         <div id="jqGridPager"></div>
     </div>
 
-    <div v-show="!showList" class="panel panel-default">
+    <div v-show="!showList && !showUpdate" class="panel panel-default">
         <div class="panel-heading">{{title}}</div>
         <form class="form-horizontal">
-														                    <div class="form-group">
-                        <div class="col-sm-2 control-label">资产编码</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.assetCode" placeholder="资产编码"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">资产名称</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.assetName" placeholder="资产名称"/>
-                        </div>
-                    </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">资产名称</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="asset.assetName" placeholder="资产名称"/>
+                </div>
+            </div>
 
             <div class="form-group">
                 <div class="col-sm-2 control-label">资产分类名称</div>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" style="cursor:pointer;" v-model="asset.categoryName" @click="categoryTree" readonly="readonly" placeholder="选择分类"/>
+                    <input type="text" class="form-control" style="cursor:pointer;" v-model="asset.categoryName"
+                           @click="categoryTree" readonly="readonly" placeholder="选择分类"/>
                 </div>
             </div>
-											                    <!--<div class="form-group">
-                        <div class="col-sm-2 control-label">资产分类名称</div>
-                        <div class="col-sm-10">
-&lt;!&ndash;
-                            <input type="text" class="form-control" v-model="asset.categoryName" placeholder="资产分类名称"/>
-&ndash;&gt;
-                            <select class="form-control" id="categoryNameSelect"></select>
-                        </div>-->
-
             <div class="form-group">
                 <div class="col-sm-2 control-label">所属部门</div>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" style="cursor:pointer;" v-model="asset.orgName" @click="deptTree" readonly="readonly" placeholder="所属部门"/>
+                    <input type="text" class="form-control" style="cursor:pointer;" v-model="asset.orgName"
+                           @click="deptTree" readonly="readonly" placeholder="所属部门"/>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-2 control-label">使用部门</div>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" style="cursor:pointer;" v-model="asset.useOrgName" @click="useDeptTree" readonly="readonly" placeholder="使用部门"/>
+                    <input type="text" class="form-control" style="cursor:pointer;" v-model="asset.useOrgName"
+                           @click="useDeptTree" readonly="readonly" placeholder="使用部门"/>
                 </div>
             </div>
-<!--
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">所属组织名称</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.orgName" placeholder="所属组织名称"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">使用组织名称</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.useOrgName" placeholder="使用组织名称"/>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">使用人名称</div>
+                <div class="col-sm-10">
+                    <select class="form-control" v-model="asset.empName" id="empNameSelect"></select>
+                </div>
+            </div>
 
-                        </div>
-                    </div>-->
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">使用人名称</div>
-                        <div class="col-sm-10">
-<!--
-                            <input type="text" class="form-control" v-model="asset.empName" placeholder="使用人名称"/>
--->
-                            <select class="form-control" v-model="asset.empName" id="empNameSelect"></select>
-                        </div>
-                    </div>
-
-
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">管理员名称</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.adminUsername" placeholder="管理员名称"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">区域名称</div>
-                        <div class="col-sm-10">
-<!--
-                            <input type="text" class="form-control" v-model="asset.areaName" placeholder="区域名称"/>
--->
-                            <select class="form-control" v-model="asset.areaName" id="areaNameSelect"></select>
-
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">存放地点</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.storagePosition" placeholder="存放地点"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">规格型号</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.standard" placeholder="规格型号"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">计量单位</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.unit" placeholder="计量单位"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">价值（元）</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.worth" placeholder="价值（元）"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">使用期限（月）</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.timeLimit" placeholder="使用期限（月）"/>
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">购买日期</div>
-                        <div class="col-sm-10">
-                            <!--<input type="text" class="form-control" v-model="asset.buyTime" placeholder="购买日期"/>-->
-                            <input type="text" class="form-control" id="checkDateBefore" v-model="asset.buyTime" placeholder="请选择购买日期">
-
-                        </div>
-                    </div>
-											                    <div class="form-group">
-                        <div class="col-sm-2 control-label">供应商</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.supplier" placeholder="供应商"/>
-                        </div>
-                    </div>
-											                     <div class="form-group">
-                        <div class="col-sm-2 control-label">备注</div>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="asset.remarks" placeholder="备注"/>
-                        </div>
-                    </div>
-							            <div class="form-group">
+            <div class="form-group">
+                <div class="col-sm-2 control-label">管理员名称</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="asset.adminUsername" placeholder="管理员名称"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">区域名称</div>
+                <div class="col-sm-10">
+                    <select class="form-control" v-model="asset.areaName" id="areaNameSelect"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">存放地点</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="asset.storagePosition" placeholder="存放地点"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">规格型号</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="asset.standard" placeholder="规格型号"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">计量单位</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="asset.unit" placeholder="计量单位"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">价值（元）</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="asset.worth" placeholder="价值（元）"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">使用期限（月）</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="asset.timeLimit" placeholder="使用期限（月）"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">购买日期</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="checkDateBefore" v-model="asset.buyTime"
+                           placeholder="请选择购买日期">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">供应商</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="asset.supplier" placeholder="供应商"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">备注</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="asset.remarks" placeholder="备注"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">新增数量</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="asset.assetNumber" placeholder="新增数量"/>
+                </div>
+            </div>
+            <div class="form-group">
                 <div class="col-sm-2 control-label"></div>
-                <input type="button" class="btn btn-primary" id="btnSaveOrUpdate" data-loading-text="保存中..." @click="saveOrUpdate" value="确定"/>
+                <input type="button" class="btn btn-primary" id="btnSaveOrUpdate" data-loading-text="保存中..."
+                       @click="saveOrUpdate" value="确定"/>
                 &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
             </div>
         </form>
     </div>
+
+<div v-show="!showList && showUpdate" class="panel panel-default">
+    <div class="panel-heading">{{title}}</div>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <div class="col-sm-2 control-label">资产名称</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.assetName" placeholder="资产名称" disabled/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-2 control-label">资产分类名称</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.categoryName" placeholder="资产名称" disabled/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">所属部门</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.orgName" placeholder="资产名称" disabled/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">使用部门</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.useOrgName" placeholder="资产名称" disabled/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">使用人名称</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.empName" placeholder="资产名称" disabled/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-2 control-label">管理员名称</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.adminUsername" placeholder="资产名称" disabled/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">区域名称</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.areaName" placeholder="资产名称" disabled/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">存放地点</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.storagePosition" placeholder="存放地点"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">规格型号</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.standard" placeholder="规格型号"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">计量单位</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.unit" placeholder="计量单位"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">价值（元）</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.worth" placeholder="价值（元）"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">使用期限（月）</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.timeLimit" placeholder="使用期限（月）"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">购买日期</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="checkDateBefore1" v-model="asset.buyTime"
+                       placeholder="请选择购买日期">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">供应商</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.supplier" placeholder="供应商"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">备注</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="asset.remarks" placeholder="备注"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label"></div>
+            <input type="button" class="btn btn-primary" id="btnUpdateAsset" data-loading-text="保存中..."
+                   @click="updateAsset" value="确定"/>
+            &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+        </div>
+    </form>
+</div>
 
 
 <div id="WXfinishShow" style="display: none;">
